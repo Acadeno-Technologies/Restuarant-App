@@ -74,11 +74,12 @@ export const EditTableModal = ({ isOpen, table, onClose, onTableUpdated }) => {
       return;
     }
 
-    const numStr = String(table.number || '2').replace(/^Table\s*/i, '').trim();
-    const formattedNum = numStr.toUpperCase().startsWith('T')
-      ? numStr.toUpperCase()
-      : `T${numStr}`;
-    setTableName(table.name || formattedNum);
+    const rawVal = String(table.name || table.number || '5').trim();
+    const digits = rawVal.replace(/\D/g, '');
+    const formattedShort = digits
+      ? `T${digits}`
+      : rawVal.replace(/^Table\s*[-_]?\s*/i, 'T').replace(/\s+/g, '');
+    setTableName(formattedShort);
 
     const capStr = String(table.capacity || 4);
     setCapacity(capStr);
@@ -249,7 +250,7 @@ export const EditTableModal = ({ isOpen, table, onClose, onTableUpdated }) => {
               className="admin-edit-form-input"
               value={tableName}
               onChange={(e) => setTableName(e.target.value)}
-              placeholder="e.g. T2"
+              placeholder="e.g. T5"
               required
             />
           </div>
