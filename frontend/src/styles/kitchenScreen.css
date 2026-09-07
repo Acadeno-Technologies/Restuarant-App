@@ -93,27 +93,40 @@
 .kitchen-portal-nav-link {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  padding: 0.75rem 1.15rem;
+  gap: 0.95rem;
+  padding: 0 1.25rem;
+  height: 48px;
   border-radius: 9999px;
-  background-color: #2D1007;
-  color: #FFFFFF;
+  background-color: #200604;
+  color: #F9BA96;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  box-shadow: 0 4px 14px rgba(45, 16, 7, 0.22);
-  transition: transform 0.15s ease;
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  box-shadow: -4px 0 0 0 #F9BA96, 0 4px 16px rgba(32, 6, 4, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
 }
 
 .kitchen-portal-nav-link:hover {
   transform: translateY(-1px);
+  box-shadow: -4px 0 0 0 #F9BA96, 0 6px 20px rgba(32, 6, 4, 0.32);
 }
 
-.kitchen-portal-nav-icon {
-  color: #E27B44;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.kitchen-portal-nav-link span {
+  color: #F9BA96 !important;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+.kitchen-portal-nav-img {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 /* Sidebar Footer / Logout */

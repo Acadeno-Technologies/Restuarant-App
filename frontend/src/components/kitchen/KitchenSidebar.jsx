@@ -44,7 +44,7 @@ export const KitchenSidebar = () => {
                 <img
                   src={isActive ? '/sidebar4-active.svg' : '/sidebar4.svg'}
                   alt="Kitchen Screen"
-                  style={{ width: '21px', height: '21px', objectFit: 'contain' }}
+                  className="kitchen-portal-nav-img"
                 />
                 <span>Kitchen Screen</span>
               </>
