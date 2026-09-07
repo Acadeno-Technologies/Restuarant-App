@@ -5900,11 +5900,11 @@
 }
 
 .admin-orders-empty-icon-wrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: #EDE9FE;
-  border: 1.8px solid #8B5CF6;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #F6EFE9;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
