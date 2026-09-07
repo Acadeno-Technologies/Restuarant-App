@@ -7808,6 +7808,7 @@ h6 {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  position: relative;
   transition: all 0.15s ease;
 }
 
@@ -7815,6 +7816,45 @@ h6 {
   background: #FEE2E2;
   border-color: #FCA5A5;
 }
+
+.admin-orders-trash-btn.active {
+  background: #EF4444;
+  border-color: #EF4444;
+}
+
+.admin-orders-trash-btn.active:hover {
+  background: #DC2626;
+  border-color: #DC2626;
+}
+
+.admin-orders-trash-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #200604;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 700;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #FFFFFF;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.admin-orders-checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid #D1D5DB;
+  cursor: pointer;
+  accent-color: #200604;
+  vertical-align: middle;
+}
+
 
 .admin-orders-table-wrapper {
   overflow-x: auto;
@@ -7907,5 +7947,139 @@ h6 {
   background: #B04E34;
   transform: translateY(-1px);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   DELETE CONFIRMATION MODAL (Exact Reference Design Match)
+   ═══════════════════════════════════════════════════════════════ */
+.admin-delete-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  animation: adminFadeIn 0.15s ease-out;
+}
+
+.admin-delete-modal-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 440px;
+  padding: 32px 28px 28px 28px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.18);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+  animation: adminScaleUp 0.18s ease-out;
+}
+
+.admin-delete-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-delete-modal-close:hover {
+  background: #F3F4F6;
+}
+
+.admin-delete-modal-icon-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #FFF1F2;
+  border: 1.5px solid #FECDD3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.admin-delete-modal-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.admin-delete-modal-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #6B7280;
+  margin: 0 0 24px 0;
+  max-width: 320px;
+}
+
+.admin-delete-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.admin-delete-modal-cancel-btn {
+  flex: 1;
+  height: 42px;
+  border-radius: 9999px;
+  border: 1px solid #E5E7EB;
+  background: #FFFFFF;
+  color: #374151;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-delete-modal-cancel-btn:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+}
+
+.admin-delete-modal-confirm-btn {
+  flex: 1;
+  height: 42px;
+  border-radius: 9999px;
+  border: none;
+  background: #200604;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(32, 6, 4, 0.2);
+}
+
+.admin-delete-modal-confirm-btn:hover {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
+.admin-delete-modal-confirm-btn:disabled,
+.admin-delete-modal-cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 
 

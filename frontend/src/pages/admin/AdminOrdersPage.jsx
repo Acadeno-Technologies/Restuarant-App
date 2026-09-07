@@ -8,9 +8,11 @@ import {
   ChevronDown,
   Trash2,
   FileText,
+  X,
 } from 'lucide-react';
 import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
 import { AdminBillModal } from '../../components/admin/AdminBillModal';
+import { AdminDeleteModal } from '../../components/admin/AdminDeleteModal';
 import '../../styles/admin.css';
 
 export const AdminOrdersPage = () => {
@@ -23,6 +25,10 @@ export const AdminOrdersPage = () => {
   const [timeFilter, setTimeFilter] = useState('today'); // 'today' | 'weekly' | 'monthly' | 'all' | 'custom'
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedBillOrder, setSelectedBillOrder] = useState(null);
+  const [isDeleteMode, setIsDeleteMode] = useState(false);
+  const [selectedOrderIds, setSelectedOrderIds] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadOrders = async () => {
     setLoading(true);
@@ -42,6 +48,55 @@ export const AdminOrdersPage = () => {
   useEffect(() => {
     loadOrders();
   }, []);
+
+  const handleToggleSelectOrder = (orderId) => {
+    setSelectedOrderIds((prev) =>
+      prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
+    );
+  };
+
+  const handleToggleSelectAll = () => {
+    const allFilteredIds = filteredOrders.map((o) => o.id);
+    const allSelected = allFilteredIds.length > 0 && allFilteredIds.every((id) => selectedOrderIds.includes(id));
+    if (allSelected) {
+      setSelectedOrderIds((prev) => prev.filter((id) => !allFilteredIds.includes(id)));
+    } else {
+      setSelectedOrderIds((prev) => Array.from(new Set([...prev, ...allFilteredIds])));
+    }
+  };
+
+  const handleDeleteClick = () => {
+    if (!isDeleteMode) {
+      setIsDeleteMode(true);
+      return;
+    }
+
+    if (selectedOrderIds.length === 0) {
+      setIsDeleteMode(false);
+      return;
+    }
+
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedOrderIds.length === 0) return;
+
+    setDeleting(true);
+    try {
+      await Promise.all(selectedOrderIds.map((id) => ordersApi.deleteOrder(id)));
+      setSelectedOrderIds([]);
+      setShowDeleteModal(false);
+      setIsDeleteMode(false);
+      await loadOrders();
+    } catch (err) {
+      console.error('Failed to delete orders:', err);
+      alert('Failed to delete some orders. Please try again.');
+      await loadOrders();
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   // Helper date matchers
   const isSameDay = (d1, d2) => {
@@ -319,14 +374,21 @@ export const AdminOrdersPage = () => {
 
                 <button
                   type="button"
-                  className="admin-orders-trash-btn"
-                  title="Clear date filter"
-                  onClick={() => {
-                    setSelectedDate('');
-                    setTimeFilter('all');
-                  }}
+                  className={`admin-orders-trash-btn ${isDeleteMode ? 'active' : ''}`}
+                  title={
+                    !isDeleteMode
+                      ? 'Delete orders (select)'
+                      : selectedOrderIds.length > 0
+                      ? `Delete ${selectedOrderIds.length} selected orders`
+                      : 'Exit delete mode'
+                  }
+                  onClick={handleDeleteClick}
+                  disabled={deleting}
                 >
-                  <Trash2 size={15} color="#EF4444" strokeWidth={2} />
+                  <Trash2 size={15} color={isDeleteMode ? '#FFFFFF' : '#EF4444'} strokeWidth={2} />
+                  {selectedOrderIds.length > 0 && (
+                    <span className="admin-orders-trash-badge">{selectedOrderIds.length}</span>
+                  )}
                 </button>
               </div>
             </div>
@@ -356,6 +418,19 @@ export const AdminOrdersPage = () => {
                 <table className="admin-orders-table">
                   <thead>
                     <tr>
+                      {isDeleteMode && (
+                        <th style={{ width: '48px', textAlign: 'center' }}>
+                          <input
+                            type="checkbox"
+                            className="admin-orders-checkbox"
+                            checked={
+                              filteredOrders.length > 0 &&
+                              filteredOrders.every((o) => selectedOrderIds.includes(o.id))
+                            }
+                            onChange={handleToggleSelectAll}
+                          />
+                        </th>
+                      )}
                       <th>ORDER ID</th>
                       <th>TABLE</th>
                       <th>TYPE</th>
@@ -371,9 +446,20 @@ export const AdminOrdersPage = () => {
                       const typeText = isTakeaway ? 'Take away' : 'Dine In';
                       const amountStr = formatOrderAmount(ord.total_amount || ord.total || ord.subtotal || 0);
                       const dateStr = formatOrderDateTime(ord.created_at);
+                      const isSelected = selectedOrderIds.includes(ord.id);
 
                       return (
-                        <tr key={ord.id}>
+                        <tr key={ord.id} className={isSelected ? 'is-selected' : ''}>
+                          {isDeleteMode && (
+                            <td style={{ width: '48px', textAlign: 'center' }}>
+                              <input
+                                type="checkbox"
+                                className="admin-orders-checkbox"
+                                checked={isSelected}
+                                onChange={() => handleToggleSelectOrder(ord.id)}
+                              />
+                            </td>
+                          )}
                           <td className="admin-orders-cell-id">#{ord.id}</td>
                           <td className="admin-orders-cell-table">{tableText}</td>
                           <td className="admin-orders-cell-type">{typeText}</td>
@@ -412,9 +498,27 @@ export const AdminOrdersPage = () => {
           }}
         />
       )}
+
+      {/* Delete Selected Orders Confirmation Modal */}
+      <AdminDeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => !deleting && setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Selected Orders"
+        description={
+          <>
+            Are you sure you want to permanently delete these orders?<br />
+            This will immediately remove them from today's active service.
+          </>
+        }
+        confirmText={`Delete (${selectedOrderIds.length} Order${selectedOrderIds.length > 1 ? 's' : ''})`}
+        cancelText="Cancel"
+        isDeleting={deleting}
+      />
     </div>
   );
 };
 
 export default AdminOrdersPage;
+
 

@@ -5,6 +5,7 @@ import { Search, Plus, Edit2, Trash2 } from 'lucide-react';
 import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
 import { AddStaffModal } from '../../components/admin/AddStaffModal';
 import { EditStaffModal } from '../../components/admin/EditStaffModal';
+import { AdminDeleteModal } from '../../components/admin/AdminDeleteModal';
 import '../../styles/admin.css';
 
 // Palette of background colors for initials avatar matching reference design
@@ -29,6 +30,8 @@ export const AdminStaffsPage = () => {
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
+  const [deletingStaff, setDeletingStaff] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadStaffs = async () => {
     setLoading(true);
@@ -50,16 +53,18 @@ export const AdminStaffsPage = () => {
     loadStaffs();
   }, []);
 
-  const handleRemoveStaff = async (staffId, name) => {
-    if (!window.confirm(`Are you sure you want to remove ${name || 'this staff member'}?`)) {
-      return;
-    }
+  const handleConfirmRemoveStaff = async () => {
+    if (!deletingStaff) return;
+    setIsDeleting(true);
     try {
-      await authApi.deleteStaff(staffId);
+      await authApi.deleteStaff(deletingStaff.id);
+      setDeletingStaff(null);
       loadStaffs();
     } catch (err) {
       console.error('Failed to remove staff:', err);
       alert('Failed to remove staff member');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -289,7 +294,7 @@ export const AdminStaffsPage = () => {
                           <button
                             type="button"
                             className="admin-staff-action-btn remove"
-                            onClick={() => handleRemoveStaff(st.id, displayName)}
+                            onClick={() => setDeletingStaff({ id: st.id, name: displayName })}
                           >
                             Remove
                           </button>
@@ -328,6 +333,23 @@ export const AdminStaffsPage = () => {
           }}
         />
       )}
+
+      {/* Delete Staff Confirmation Modal */}
+      <AdminDeleteModal
+        isOpen={!!deletingStaff}
+        onClose={() => !isDeleting && setDeletingStaff(null)}
+        onConfirm={handleConfirmRemoveStaff}
+        title="Remove Staff Member"
+        description={
+          <>
+            Are you sure you want to remove <strong>{deletingStaff?.name || 'this staff member'}</strong>?<br />
+            This will immediately revoke their access to the system.
+          </>
+        }
+        confirmText="Remove Staff"
+        cancelText="Cancel"
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };

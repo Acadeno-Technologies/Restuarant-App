@@ -30,4 +30,8 @@ export const ordersApi = {
     const response = await api.patch(`orders/items/${itemId}/`, data);
     return response.data;
   },
+  deleteOrder: async (id) => {
+    const response = await api.delete(`orders/${id}/`);
+    return response.data;
+  },
 };

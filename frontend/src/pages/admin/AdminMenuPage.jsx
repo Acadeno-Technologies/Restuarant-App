@@ -10,6 +10,7 @@ import { EditMenuItemModal } from '../../components/admin/EditMenuItemModal';
 import { AdminParcelModal } from '../../components/admin/AdminParcelModal';
 import { AdminParcelOrderModal } from '../../components/admin/AdminParcelOrderModal';
 import { AdminBillModal } from '../../components/admin/AdminBillModal';
+import { AdminDeleteModal } from '../../components/admin/AdminDeleteModal';
 import { Search, Pencil, Trash2, UtensilsCrossed, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { resolveImageUrl } from '../../utils/imageUrl';
@@ -53,6 +54,12 @@ export const AdminMenuPage = () => {
   const [isParcelModalOpen, setIsParcelModalOpen] = useState(false);
   const [isOrderViewModalOpen, setIsOrderViewModalOpen] = useState(false);
   const [billModalOrder, setBillModalOrder] = useState(null);
+
+  // Deletion modals state
+  const [deletingItem, setDeletingItem] = useState(null);
+  const [isDeletingItem, setIsDeletingItem] = useState(false);
+  const [deletingCategory, setDeletingCategory] = useState(null);
+  const [isDeletingCategory, setIsDeletingCategory] = useState(false);
 
 
   const loadMenuData = async () => {
@@ -167,35 +174,49 @@ export const AdminMenuPage = () => {
   const totalOrderCount = (cartItems || []).reduce((acc, item) => acc + (item.quantity || 0), 0);
 
   // Delete item handler
-  const handleDeleteItem = async (item) => {
-    if (window.confirm(`Are you sure you want to delete "${item.name}"?`)) {
-      try {
-        await menuApi.deleteMenuItem(item.id);
-        setMenuItems((prev) => prev.filter((i) => i.id !== item.id));
-      } catch (err) {
-        console.error('Failed to delete item:', err);
-        alert('Failed to delete menu item');
-      }
+  const handleDeleteItem = (item) => {
+    setDeletingItem(item);
+  };
+
+  const handleConfirmDeleteItem = async () => {
+    if (!deletingItem) return;
+    setIsDeletingItem(true);
+    try {
+      await menuApi.deleteMenuItem(deletingItem.id);
+      setMenuItems((prev) => prev.filter((i) => i.id !== deletingItem.id));
+      setDeletingItem(null);
+    } catch (err) {
+      console.error('Failed to delete item:', err);
+      alert('Failed to delete menu item');
+    } finally {
+      setIsDeletingItem(false);
     }
   };
 
   // Delete category handler
-  const handleDeleteCategory = async (cat, e) => {
-    e.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete category "${cat.name}"?`)) {
-      try {
-        await menuApi.deleteCategory(cat.id);
-        setCategories((prev) => prev.filter((c) => c.id !== cat.id));
-        if (
-          activeCategory === cat.id ||
-          String(activeCategory).toLowerCase() === cat.name.toLowerCase()
-        ) {
-          setActiveCategory('All');
-        }
-      } catch (err) {
-        console.error('Failed to delete category:', err);
-        alert('Failed to delete category');
+  const handleDeleteCategory = (cat, e) => {
+    e?.stopPropagation();
+    setDeletingCategory(cat);
+  };
+
+  const handleConfirmDeleteCategory = async () => {
+    if (!deletingCategory) return;
+    setIsDeletingCategory(true);
+    try {
+      await menuApi.deleteCategory(deletingCategory.id);
+      setCategories((prev) => prev.filter((c) => c.id !== deletingCategory.id));
+      if (
+        activeCategory === deletingCategory.id ||
+        String(activeCategory).toLowerCase() === deletingCategory.name.toLowerCase()
+      ) {
+        setActiveCategory('All');
       }
+      setDeletingCategory(null);
+    } catch (err) {
+      console.error('Failed to delete category:', err);
+      alert('Failed to delete category');
+    } finally {
+      setIsDeletingCategory(false);
     }
   };
 
@@ -680,6 +701,40 @@ export const AdminMenuPage = () => {
           loadMenuData();
           setIsOrderViewModalOpen(false);
         }}
+      />
+
+      {/* Delete Menu Item Confirmation Modal */}
+      <AdminDeleteModal
+        isOpen={!!deletingItem}
+        onClose={() => !isDeletingItem && setDeletingItem(null)}
+        onConfirm={handleConfirmDeleteItem}
+        title="Delete Menu Item"
+        description={
+          <>
+            Are you sure you want to delete <strong>"{deletingItem?.name}"</strong>?<br />
+            This item will be permanently removed from your active menu catalogue.
+          </>
+        }
+        confirmText="Delete Item"
+        cancelText="Cancel"
+        isDeleting={isDeletingItem}
+      />
+
+      {/* Delete Category Confirmation Modal */}
+      <AdminDeleteModal
+        isOpen={!!deletingCategory}
+        onClose={() => !isDeletingCategory && setDeletingCategory(null)}
+        onConfirm={handleConfirmDeleteCategory}
+        title="Delete Category"
+        description={
+          <>
+            Are you sure you want to delete category <strong>"{deletingCategory?.name}"</strong>?<br />
+            Dishes under this category will become unassigned.
+          </>
+        }
+        confirmText="Delete Category"
+        cancelText="Cancel"
+        isDeleting={isDeletingCategory}
       />
     </div>
   );
