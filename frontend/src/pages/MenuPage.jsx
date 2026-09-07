@@ -3,6 +3,7 @@ import { menuApi } from '../api/menuApi';
 import { tablesApi } from '../api/tablesApi';
 import { Utensils, Plus, Edit, Trash2, Leaf, Flame, Image, RefreshCw } from 'lucide-react';
 import { resolveImageUrl } from '../utils/imageUrl';
+import { sortByPriceTier } from '../utils/priceTier';
 
 export const MenuPage = () => {
   const [categories, setCategories] = useState([]);
@@ -197,7 +198,7 @@ export const MenuPage = () => {
         </div>
       ) : (
         <div className="grid-3">
-          {menuItems.map((item) => (
+          {sortByPriceTier(menuItems).map((item) => (
             <div key={item.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
                 <img

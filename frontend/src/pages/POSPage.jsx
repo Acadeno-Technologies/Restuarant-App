@@ -7,6 +7,7 @@ import { useOrder } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
 import MenuItemCard from '../components/pos/MenuItemCard';
 import { resolveImageUrl } from '../utils/imageUrl';
+import { sortByPriceTier } from '../utils/priceTier';
 import {
   Search,
   Plus,
@@ -206,19 +207,21 @@ export const POSPage = () => {
     );
   };
 
-  // Filter items dynamically by category and search
-  const filteredItems = menuItems.filter((item) => {
-    const itemCatId = typeof item.category === 'object' ? item.category?.id : item.category;
-    const matchesCategory =
-      selectedCategory === 'all' ||
-      itemCatId === parseInt(selectedCategory) ||
-      itemCatId === selectedCategory ||
-      item.category_name === selectedCategory;
-    const matchesSearch =
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesCategory && matchesSearch;
-  });
+  // Filter items dynamically by category and search, sorted by price tier (1-price -> 2-prices -> 3-prices)
+  const filteredItems = sortByPriceTier(
+    menuItems.filter((item) => {
+      const itemCatId = typeof item.category === 'object' ? item.category?.id : item.category;
+      const matchesCategory =
+        selectedCategory === 'all' ||
+        itemCatId === parseInt(selectedCategory) ||
+        itemCatId === selectedCategory ||
+        item.category_name === selectedCategory;
+      const matchesSearch =
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchesCategory && matchesSearch;
+    })
+  );
 
   const taxAmount = subtotal * 0.05;
   const grandTotal = subtotal + taxAmount;
