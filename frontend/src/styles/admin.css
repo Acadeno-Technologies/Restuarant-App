@@ -897,17 +897,20 @@
 .atc-body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin: 0.25rem 0;
+  justify-content: center;
+  flex: 1;
+  gap: 10px;
+  margin: 0.5rem 0;
 }
 
 .atc-capacity {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: #171717;
+  line-height: 1.2;
 }
 
 .atc-chair-icon {
@@ -924,9 +927,10 @@
 }
 
 .atc-subtext {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: #171717;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
