@@ -14,7 +14,7 @@ services:
       - key: DATABASE_URL
         value: postgresql://neondb_owner:npg_6UPocWs9DjSY@ep-hidden-recipe-azlq7kgu-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
       - key: CLOUDINARY_URL
-        value: cloudinary://454882143399593:NDaN_gdZLKz3tL4iMxP-iF5nUPU@n21yfaa4
+        value: cloudinary://956282561925651:qJWJ9kuTrkT8Eh_7SwfW87-kPbU@tbz9jmnj
       - key: SECRET_KEY
         generateValue: true
       - key: PYTHON_VERSION

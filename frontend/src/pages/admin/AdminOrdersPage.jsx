@@ -499,22 +499,44 @@ export const AdminOrdersPage = () => {
         />
       )}
 
-      {/* Delete Selected Orders Confirmation Modal */}
-      <AdminDeleteModal
-        isOpen={showDeleteModal}
-        onClose={() => !deleting && setShowDeleteModal(false)}
-        onConfirm={handleConfirmDelete}
-        title="Delete Selected Orders"
-        description={
+      {/* Delete Confirmation Modal (Adapts for Delete All vs Delete Selected) */}
+      {(() => {
+        const isAllSelected =
+          selectedOrderIds.length > 0 &&
+          (selectedOrderIds.length === filteredOrders.length ||
+            selectedOrderIds.length === orders.length);
+
+        const modalTitle = isAllSelected ? 'Delete All Orders' : 'Delete Selected Orders';
+        const modalDesc = isAllSelected ? (
           <>
-            Are you sure you want to permanently delete these orders?<br />
+            Warning: This action cannot be undone. All{' '}
+            <strong>{selectedOrderIds.length} active orders</strong> and associated kitchen
+            tickets will be permanently removed from today's system.
+          </>
+        ) : (
+          <>
+            Are you sure you want to permanently delete these orders?
+            <br />
             This will immediately remove them from today's active service.
           </>
-        }
-        confirmText={`Delete (${selectedOrderIds.length} Order${selectedOrderIds.length > 1 ? 's' : ''})`}
-        cancelText="Cancel"
-        isDeleting={deleting}
-      />
+        );
+        const confirmBtnText = isAllSelected
+          ? `Delete All (${selectedOrderIds.length} Orders)`
+          : `Delete (${selectedOrderIds.length} Order${selectedOrderIds.length > 1 ? 's' : ''})`;
+
+        return (
+          <AdminDeleteModal
+            isOpen={showDeleteModal}
+            onClose={() => !deleting && setShowDeleteModal(false)}
+            onConfirm={handleConfirmDelete}
+            title={modalTitle}
+            description={modalDesc}
+            confirmText={confirmBtnText}
+            cancelText="Cancel"
+            isDeleting={deleting}
+          />
+        );
+      })()}
     </div>
   );
 };

@@ -6660,7 +6660,7 @@
 .admin-staff-overview-card {
   background: #FFFFFF;
   border-radius: 24px;
-  padding: 28px 32px;
+  padding: 32px 36px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
   min-height: 580px;
   display: flex;
@@ -6671,27 +6671,28 @@
 .admin-staff-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  align-items: flex-start;
+  margin-bottom: 28px;
 }
 
 .admin-staff-title {
   font-family: 'Inter', 'Outfit', sans-serif;
-  font-size: 21px;
+  font-size: 24px;
   font-weight: 700;
   color: #1E1B18;
-  margin: 0 0 4px 0;
+  margin: 0 0 6px 0;
   letter-spacing: -0.01em;
 }
 
 .admin-staff-desc {
-  font-size: 13px;
+  font-size: 13.5px;
   color: #78716C;
   margin: 0;
+  font-weight: 400;
 }
 
 .admin-staff-add-btn {
-  background: #200604;
+  background: #1C0904;
   color: #FFFFFF;
   border-radius: 9999px;
   padding: 10px 22px;
@@ -6704,11 +6705,10 @@
   align-items: center;
   gap: 6px;
   transition: all 0.15s ease;
-  box-shadow: 0 3px 10px rgba(32, 6, 4, 0.2);
 }
 
 .admin-staff-add-btn:hover {
-  background: #3A100B;
+  background: #35140C;
   transform: translateY(-1px);
 }
 
@@ -6720,28 +6720,38 @@
 .admin-staff-table {
   width: 100%;
   border-collapse: collapse;
-  text-align: center;
+  border-spacing: 0;
 }
 
 .admin-staff-table th {
-  padding: 14px 16px;
-  font-size: 11px;
+  padding: 16px 14px;
+  font-size: 11.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #8C827A;
-  border-bottom: 1px solid #F0EAE4;
+  letter-spacing: 0.05em;
+  color: #1E1B18;
+  border-bottom: 1px solid #ECE4DC;
   background: transparent;
   text-align: center;
 }
 
+.admin-staff-table th:first-child {
+  text-align: left;
+  padding-left: 20px;
+}
+
 .admin-staff-table td {
-  padding: 16px 16px;
+  padding: 18px 14px;
   font-size: 13.5px;
-  color: #1E1B18;
-  border-bottom: 1px solid #F4EFEA;
+  color: #4A4440;
+  border-bottom: 1px solid #F6F1EC;
   vertical-align: middle;
   text-align: center;
+}
+
+.admin-staff-table td:first-child {
+  text-align: left;
+  padding-left: 20px;
 }
 
 .admin-staff-table tr:hover td {
@@ -6751,14 +6761,14 @@
 .admin-staff-name-cell {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  gap: 14px;
+  text-align: left;
 }
 
 .admin-staff-avatar {
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
   border-radius: 50%;
   color: #FFFFFF;
   display: flex;
@@ -6777,24 +6787,28 @@
 }
 
 .admin-staff-username-text {
-  color: #574F49;
+  color: #4A4440;
   font-size: 13.5px;
+  font-weight: 400;
 }
 
 .admin-staff-role-badge {
-  border: 1px solid #E8DFD7;
-  background: #FFFFFF;
-  color: #44403C;
-  font-size: 11.5px;
-  font-weight: 600;
-  padding: 3px 12px;
+  border: 1px solid #E5DCD3;
+  background: #FAF7F2;
+  color: #4E443E;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 18px;
   border-radius: 9999px;
   display: inline-block;
+  min-width: 70px;
+  text-align: center;
 }
 
 .admin-staff-secondary-text {
-  color: #6B7280;
+  color: #5C544E;
   font-size: 13px;
+  font-weight: 400;
 }
 
 .admin-staff-actions {
@@ -6807,35 +6821,36 @@
 .admin-staff-action-btn {
   font-family: 'Inter', sans-serif;
   font-size: 12px;
-  font-weight: 600;
-  padding: 5px 14px;
+  font-weight: 500;
+  padding: 6px 14px;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 58px;
 }
 
 .admin-staff-action-btn.edit {
-  border: 1px solid #E5DDD5;
+  border: 1px solid #DCD3CA;
   background: #FFFFFF;
-  color: #374151;
+  color: #3A322D;
 }
 
 .admin-staff-action-btn.edit:hover {
-  background: #F5EBE1;
-  border-color: #D3C9BE;
+  background: #F8F4EE;
+  border-color: #CEC3B8;
 }
 
 .admin-staff-action-btn.remove {
-  background: #CB5A48;
+  background: #CB5A44;
   color: #FFFFFF;
   border: none;
 }
 
 .admin-staff-action-btn.remove:hover {
-  background: #B64736;
+  background: #B64733;
 }
 
 /* Staff Management Empty State */
@@ -7133,9 +7148,10 @@
 .admin-settings-top-header {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 16px;
   width: 100%;
+  margin-top: 20px;
 }
 
 .admin-settings-main-card {

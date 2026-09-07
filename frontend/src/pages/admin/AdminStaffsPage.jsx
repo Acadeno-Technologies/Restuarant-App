@@ -10,14 +10,14 @@ import '../../styles/admin.css';
 
 // Palette of background colors for initials avatar matching reference design
 const AVATAR_COLORS = [
-  '#3B6B88', // Dark Blue / Slate (SM)
-  '#B8624D', // Terracotta (SP)
-  '#8B6F47', // Olive / Brown (AV)
-  '#7A4F7D', // Purple / Plum (PK)
-  '#BA5436', // Rust / Red-Orange (RK)
-  '#3B728F', // Slate Blue (PN)
-  '#C06838', // Amber Brown (JD)
-  '#6B4D78', // Purple (AM)
+  '#355C7D', // Slate Navy Blue (SM)
+  '#A8553A', // Terracotta Rust (AS)
+  '#8D623C', // Warm Olive/Bronze (AB)
+  '#5C4D6B', // Muted Plum Purple (AN)
+  '#BF6B30', // Ochre / Bronze Amber (AR)
+  '#3B729E', // Teal / Slate Blue (MN)
+  '#C05844', // Brick Red (MD)
+  '#785888', // Violet Purple (SJ)
 ];
 
 export const AdminStaffsPage = () => {
@@ -101,13 +101,11 @@ export const AdminStaffsPage = () => {
     if (st.first_name && st.last_name) {
       return `${st.first_name[0]}${st.last_name[0]}`.toUpperCase();
     }
-    if (st.first_name && st.first_name.length >= 2) {
-      return st.first_name.slice(0, 2).toUpperCase();
+    const name = (st.first_name || st.username || 'ST').trim();
+    if (name.length >= 2) {
+      return name.slice(0, 2).toUpperCase();
     }
-    if (st.username && st.username.length >= 2) {
-      return st.username.slice(0, 2).toUpperCase();
-    }
-    return (st.username?.[0] || 'ST').toUpperCase();
+    return (name[0] || 'S').toUpperCase();
   };
 
   // Format Role Title directly from database
@@ -118,7 +116,9 @@ export const AdminStaffsPage = () => {
     if (role === 'kitchen') return 'Chef';
     if (role === 'manager') return 'Manager';
     if (role === 'cashier') return 'Cashier';
-    if (role === 'staff') return 'Staff';
+    if (role === 'staff_1' || role === 'staff1') return 'Staff 1';
+    if (role === 'staff_2' || role === 'staff2') return 'Staff 2';
+    if (role === 'staff') return 'Staff 1';
     return st.role || 'Staff';
   };
 
@@ -214,7 +214,7 @@ export const AdminStaffsPage = () => {
                   <th>EMAIL</th>
                   <th>PHONE</th>
                   <th>JOINED</th>
-                  <th>ACTIONS</th>
+                  <th>ACTION</th>
                 </tr>
               </thead>
               <tbody>

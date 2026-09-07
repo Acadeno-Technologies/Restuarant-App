@@ -6,7 +6,7 @@ import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceho
 import { AdminProfileModal } from '../../components/admin/AdminProfileModal';
 
 export const AdminSettingsPage = () => {
-  const { user } = useAuth();
+  const { user, openProfile } = useAuth();
 
   // Active Tab: 'profile' | 'bill'
   const [activeTab, setActiveTab] = useState('profile');
@@ -170,7 +170,7 @@ export const AdminSettingsPage = () => {
       {/* ═══════════════════════════════════════════════════════════════
           TOP HEADER ROW: Search Pill + Bell + Avatar
       ═══════════════════════════════════════════════════════════════ */}
-      <div className="admin-settings-top-header">
+      <div className="admin-menu-top-header">
         <div className="admin-search-pill" style={{ flex: 1 }}>
           <input
             type="text"
@@ -191,7 +191,7 @@ export const AdminSettingsPage = () => {
         {/* Admin Profile Avatar */}
         <div
           className="admin-profile-circle-btn"
-          onClick={() => setIsProfileModalOpen(true)}
+          onClick={openProfile || (() => setIsProfileModalOpen(true))}
           title="Admin Profile"
           style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >

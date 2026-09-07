@@ -116,7 +116,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# Tell Django to trust the X-Forwarded-Proto header from Render's reverse proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 import os
 cloudinary_url = os.environ.get('CLOUDINARY_URL', '').strip()
@@ -168,9 +171,12 @@ CORS_ALLOWED_ORIGINS = [
     'https://restuarant-app-vy1i.onrender.com',
     'https://restuarant-app-q12p.onrender.com',
 ]
-CORS_ALLOW_ALL_ORIGINS = True   # Allow all in development
+CORS_ALLOW_ALL_ORIGINS = True   # Allow all origins
+CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'https://*.vercel.app',
     'https://restaurant-application-1.onrender.com',
     'https://t-clock-application.onrender.com',
     'https://restuarant-app-vy1i.onrender.com',

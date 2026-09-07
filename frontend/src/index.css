@@ -7183,9 +7183,10 @@ h6 {
 .admin-settings-top-header {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 16px;
   width: 100%;
+  margin-top: 20px;
 }
 
 .admin-settings-main-card {
@@ -7668,47 +7669,7 @@ h6 {
   transform: translateY(-1px);
 }
 
-/* Admin Staff Table Styling */
-.admin-staff-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: center;
-}
 
-.admin-staff-table th {
-  padding: 14px 16px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #8C827A;
-  border-bottom: 1px solid #F0EAE4;
-  background: transparent;
-  text-align: center;
-}
-
-.admin-staff-table td {
-  padding: 16px 16px;
-  font-size: 13.5px;
-  color: #1E1B18;
-  border-bottom: 1px solid #F4EFEA;
-  vertical-align: middle;
-  text-align: center;
-}
-
-.admin-staff-name-cell {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-.admin-staff-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
 
 /* ═══════════════════════════════════════════════════════════════
    ADMIN ORDERS FILTER ROW & TABLE
