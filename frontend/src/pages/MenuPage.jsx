@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { menuApi } from '../api/menuApi';
 import { tablesApi } from '../api/tablesApi';
 import { Utensils, Plus, Edit, Trash2, Leaf, Flame, Image, RefreshCw } from 'lucide-react';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 export const MenuPage = () => {
   const [categories, setCategories] = useState([]);
@@ -200,7 +201,7 @@ export const MenuPage = () => {
             <div key={item.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
                 <img
-                  src={item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&auto=format&fit=crop&q=80'}
+                  src={resolveImageUrl(item.image, 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&auto=format&fit=crop&q=80')}
                   alt={item.name}
                   style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: 'var(--radius-sm)', marginBottom: '0.75rem' }}
                   onError={(e) => {

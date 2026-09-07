@@ -12,19 +12,13 @@ import { AdminParcelOrderModal } from '../../components/admin/AdminParcelOrderMo
 import { AdminBillModal } from '../../components/admin/AdminBillModal';
 import { Search, Pencil, Trash2, UtensilsCrossed, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { resolveImageUrl } from '../../utils/imageUrl';
 
 /**
  * Resolve backend image URL strictly from database record
  */
 const getFoodImage = (item) => {
-  if (item?.image && typeof item.image === 'string' && item.image.trim() !== '') {
-    if (item.image.startsWith('http://') || item.image.startsWith('https://')) {
-      return item.image;
-    }
-    const cleanPath = item.image.startsWith('/') ? item.image : `/${item.image}`;
-    return `http://127.0.0.1:8000${cleanPath}`;
-  }
-  return null;
+  return resolveImageUrl(item?.image, null);
 };
 
 /**
@@ -242,15 +236,7 @@ export const AdminMenuPage = () => {
           title="Admin Profile"
           style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          {user?.avatar ? (
-            <img
-              src={user.avatar}
-              alt="Admin"
-              style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover' }}
-            />
-          ) : (
-            <UserAvatarPlaceholder size={42} />
-          )}
+          <UserAvatarPlaceholder user={user} size={42} />
         </div>
       </div>
 

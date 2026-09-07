@@ -195,15 +195,7 @@ export const AdminSettingsPage = () => {
           title="Admin Profile"
           style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          {user?.avatar ? (
-            <img
-              src={user.avatar}
-              alt="Admin"
-              style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover' }}
-            />
-          ) : (
-            <UserAvatarPlaceholder size={42} />
-          )}
+          <UserAvatarPlaceholder user={user} size={42} />
         </div>
       </div>
 

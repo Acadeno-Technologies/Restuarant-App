@@ -143,22 +143,7 @@ export const AdminProfileModal = ({ isOpen, onClose }) => {
 
         {/* Profile Header: Avatar + Name + Role */}
         <div className="admin-profile-header-box">
-          {user?.avatar ? (
-            <img
-              src={user.avatar}
-              alt="Admin"
-              style={{
-                width: '46px',
-                height: '46px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-                border: '2px solid #FFFFFF',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-              }}
-            />
-          ) : (
-            <UserAvatarPlaceholder size={46} />
-          )}
+          <UserAvatarPlaceholder user={user} size={46} />
           <div className="admin-profile-info">
             <h3 className="admin-profile-name">{displayName}</h3>
             <p className="admin-profile-role">{displayRole}</p>

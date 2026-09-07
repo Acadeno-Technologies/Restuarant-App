@@ -6,6 +6,7 @@ import { ordersApi } from '../api/ordersApi';
 import { useOrder } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
 import MenuItemCard from '../components/pos/MenuItemCard';
+import { resolveImageUrl } from '../utils/imageUrl';
 import {
   Search,
   Plus,
@@ -691,7 +692,7 @@ export const POSPage = () => {
               cartItems.map((item, idx) => (
                 <div key={idx} style={{ padding: '0.65rem 0', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', boxSizing: 'border-box' }}>
                   <img
-                    src={item.menu_item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&auto=format&fit=crop&q=80'}
+                    src={resolveImageUrl(item.menu_item.image, 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&auto=format&fit=crop&q=80')}
                     alt={item.menu_item.name}
                     style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover', background: '#f8fafc', flexShrink: 0 }}
                     onError={(e) => {

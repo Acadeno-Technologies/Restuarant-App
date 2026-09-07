@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { resolveImageUrl } from '../../utils/imageUrl';
 
 /**
  * UserAvatarPlaceholder
@@ -7,7 +8,10 @@ import React from 'react';
  * or user's custom avatar picture.
  */
 export const UserAvatarPlaceholder = ({ user = null, size = 44, className = '', style = {} }) => {
-  if (user?.avatar) {
+  const [imgError, setImgError] = useState(false);
+  const avatarUrl = resolveImageUrl(user?.avatar);
+
+  if (avatarUrl && !imgError) {
     return (
       <div
         className={`user-avatar-placeholder ${className}`}
@@ -30,9 +34,10 @@ export const UserAvatarPlaceholder = ({ user = null, size = 44, className = '', 
         }}
       >
         <img
-          src={user.avatar}
-          alt={user.username || 'Admin'}
+          src={avatarUrl}
+          alt={user?.username || 'Admin'}
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          onError={() => setImgError(true)}
         />
       </div>
     );

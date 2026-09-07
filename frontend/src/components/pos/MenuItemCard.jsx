@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShoppingCart, Plus, Minus } from 'lucide-react';
+import { resolveImageUrl } from '../../utils/imageUrl';
 
 /**
  * MenuItemCard
@@ -58,7 +59,7 @@ const MenuItemCard = ({
       {/* ── Image ── */}
       <div style={{ position: 'relative' }}>
         <img
-          src={item.image || FALLBACK_IMG}
+          src={resolveImageUrl(item.image, FALLBACK_IMG)}
           alt={item.name}
           className="mic-img"
           onError={(e) => {
