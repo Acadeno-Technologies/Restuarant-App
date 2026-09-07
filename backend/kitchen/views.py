@@ -14,10 +14,10 @@ class KitchenQueueView(APIView):
     permission_classes = [IsKitchenOrAdmin]
 
     def get(self, request):
-        # Active orders that kitchen needs to work on
+        # Active orders that kitchen needs to work on (including recently ready orders)
         orders = Order.objects.filter(
-            status__in=['pending', 'placed', 'confirmed', 'preparing']
-        ).select_related('table').prefetch_related('items__menu_item').order_by('created_at')
+            status__in=['pending', 'placed', 'confirmed', 'preparing', 'ready']
+        ).select_related('table', 'created_by').prefetch_related('items__menu_item').order_by('created_at')
         return Response(OrderSerializer(orders, many=True).data)
 
 
@@ -39,13 +39,18 @@ class KitchenUpdateItemView(APIView):
         item.status = new_status
         item.save()
 
-        # Auto-advance order status when all items are ready
+        # Auto-advance order status based on item preparation states
         order = item.order
-        all_items = order.items.exclude(status='cancelled')
-        if all_items.exists() and all(i.status == 'ready' for i in all_items):
-            if order.status in ['pending', 'placed', 'confirmed', 'preparing']:
-                order.status = 'ready'
-                order.save()
+        all_items = list(order.items.exclude(status='cancelled'))
+        if all_items:
+            if all(i.status == 'ready' for i in all_items):
+                if order.status in ['pending', 'placed', 'confirmed', 'preparing']:
+                    order.status = 'ready'
+                    order.save()
+            elif any(i.status in ['ready', 'preparing'] for i in all_items):
+                if order.status in ['pending', 'placed', 'confirmed', 'ready']:
+                    order.status = 'preparing'
+                    order.save()
 
         return Response(OrderItemSerializer(item).data)
 

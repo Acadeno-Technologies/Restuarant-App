@@ -20,7 +20,7 @@ export const AdminLayout = () => {
   // Require Admin role (Staff and Kitchen cannot access /admin/*)
   if (user.role !== 'admin') {
     if (user.role === 'kitchen') {
-      return <Navigate to="/staff/kitchen" replace />;
+      return <Navigate to="/kitchen-screen" replace />;
     }
     return <Navigate to="/staff/tables" replace />;
   }

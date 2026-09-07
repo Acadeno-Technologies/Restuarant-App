@@ -26,6 +26,10 @@ import { AdminKitchenPage } from './pages/admin/AdminKitchenPage';
 import { AdminAggregatorsPage } from './pages/admin/AdminAggregatorsPage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
 
+// Kitchen Portal Layout & Pages
+import { KitchenLayout } from './components/kitchen/KitchenLayout';
+import { KitchenScreenPage } from './pages/kitchen/KitchenScreenPage';
+
 /**
  * RootGateway directs user to the correct portal based on role
  */
@@ -39,7 +43,7 @@ const RootGateway = () => {
     return <Navigate to="/staff/tables" replace />;
   }
   if (user.role === 'kitchen') {
-    return <Navigate to="/staff/kitchen" replace />;
+    return <Navigate to="/kitchen-screen" replace />;
   }
   return <Navigate to="/admin/dashboard" replace />;
 };
@@ -72,6 +76,14 @@ function App() {
               <Route path="kitchen" element={<AdminKitchenPage />} />
               <Route path="swiggy-zomato" element={<AdminAggregatorsPage />} />
               <Route path="settings" element={<AdminSettingsPage />} />
+            </Route>
+
+            {/* ═══════════════════════════════════════════════════════════════
+                KITCHEN PORTAL (Dedicated Kitchen Screen - Kitchen Role)
+            ═══════════════════════════════════════════════════════════════ */}
+            <Route element={<KitchenLayout />}>
+              <Route path="/kitchen-screen" element={<KitchenScreenPage />} />
+              <Route path="/kitchen" element={<KitchenScreenPage />} />
             </Route>
 
             {/* ═══════════════════════════════════════════════════════════════

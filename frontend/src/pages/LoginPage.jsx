@@ -37,7 +37,7 @@ export const LoginPage = () => {
       if (userRole === 'staff') {
         navigate('/staff/tables');
       } else if (userRole === 'kitchen') {
-        navigate('/staff/kitchen');
+        navigate('/kitchen-screen');
       } else {
         navigate('/admin/dashboard');
       }

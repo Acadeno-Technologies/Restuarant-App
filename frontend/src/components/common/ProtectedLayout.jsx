@@ -16,6 +16,10 @@ export const ProtectedLayout = () => {
     return <Navigate to="/login" replace />;
   }
 
+  if (user.role === 'kitchen') {
+    return <Navigate to="/kitchen-screen" replace />;
+  }
+
   return (
     <div className="app-container" style={{ display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', flex: 1, width: '100%' }}>

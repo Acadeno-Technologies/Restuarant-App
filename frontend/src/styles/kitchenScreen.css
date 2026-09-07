@@ -1,0 +1,617 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   T-CLOCK KITCHEN DISPLAY SYSTEM (KDS) — SPECIFIC KITCHEN SCREEN STYLES
+   Matches the exact reference mockup: Warm peach backdrop, clean white card,
+   dark brown pill sidebar navigation, and high-clarity order cards.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.kitchen-portal-root {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #FCEEE5;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1C1917;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* ── Left Sidebar ────────────────────────────────────────────────────────── */
+.kitchen-portal-sidebar {
+  width: 250px;
+  min-width: 250px;
+  background-color: #F8EFEA;
+  border-right: 1px solid #EFE4DC;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.75rem 0.85rem 1.75rem 0.85rem;
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 20;
+}
+
+/* Sidebar Brand */
+.kitchen-portal-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0 0.65rem 2rem 0.65rem;
+}
+
+.kitchen-portal-brand-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #2D1007;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(45, 16, 7, 0.15);
+  flex-shrink: 0;
+}
+
+.kitchen-portal-brand-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kitchen-portal-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.kitchen-portal-brand-title {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2D1007;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.kitchen-portal-brand-sub {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #8F6958;
+  letter-spacing: 0.08em;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+/* Navigation List */
+.kitchen-portal-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kitchen-portal-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1.15rem;
+  border-radius: 9999px;
+  background-color: #2D1007;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 14px rgba(45, 16, 7, 0.22);
+  transition: transform 0.15s ease;
+}
+
+.kitchen-portal-nav-link:hover {
+  transform: translateY(-1px);
+}
+
+.kitchen-portal-nav-icon {
+  color: #E27B44;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Sidebar Footer / Logout */
+.kitchen-portal-sidebar-footer {
+  padding-top: 1rem;
+}
+
+.kitchen-portal-logout-btn {
+  width: 100%;
+  height: 44px;
+  background-color: #2D1007;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9999px;
+  font-size: 0.925rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 14px rgba(45, 16, 7, 0.18);
+  transition: all 0.2s ease;
+}
+
+.kitchen-portal-logout-btn:hover {
+  background-color: #42180B;
+  transform: translateY(-1px);
+}
+
+.kitchen-portal-logout-btn:active {
+  transform: scale(0.98);
+}
+
+/* ── Main Area ───────────────────────────────────────────────────────────── */
+.kitchen-portal-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 2.25rem 2.5rem 2.25rem;
+  box-sizing: border-box;
+  min-height: 100vh;
+  max-width: calc(100vw - 250px);
+}
+
+/* ── Top Header ──────────────────────────────────────────────────────────── */
+.kitchen-portal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.75rem;
+  width: 100%;
+}
+
+.kitchen-search-bar {
+  flex: 1;
+  max-width: 680px;
+  height: 48px;
+  background-color: #FFFFFF;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  padding: 0 6px 0 1.35rem;
+  box-shadow: 0 2px 10px rgba(45, 16, 7, 0.04);
+  border: 1px solid #F0E4DC;
+  box-sizing: border-box;
+}
+
+.kitchen-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.95rem;
+  color: #1C1917;
+  font-family: inherit;
+}
+
+.kitchen-search-input::placeholder {
+  color: #9C8E84;
+  font-weight: 400;
+}
+
+.kitchen-search-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #2D1007;
+  color: #FFFFFF;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.kitchen-search-btn:hover {
+  transform: scale(1.05);
+}
+
+.kitchen-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.kitchen-header-icon-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 1px solid #F0E4DC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(45, 16, 7, 0.04);
+  color: #D97706;
+  transition: transform 0.15s ease;
+  position: relative;
+}
+
+.kitchen-header-icon-btn:hover {
+  transform: scale(1.04);
+}
+
+.kitchen-header-avatar-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 1px solid #F0E4DC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(45, 16, 7, 0.04);
+  overflow: hidden;
+  color: #8F6958;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* ── Main Content Container ──────────────────────────────────────────────── */
+.kitchen-display-container {
+  background-color: #FFFFFF;
+  border-radius: 28px;
+  padding: 2.25rem 2.5rem;
+  box-shadow: 0 6px 24px rgba(45, 16, 7, 0.03);
+  border: 1px solid #F2E8E0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.kitchen-display-header {
+  margin-bottom: 2rem;
+}
+
+.kitchen-display-title {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #1C1917;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.01em;
+}
+
+.kitchen-display-subtitle {
+  font-size: 0.88rem;
+  color: #78716C;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* ── Order Cards Grid ────────────────────────────────────────────────────── */
+.kitchen-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 1.75rem;
+  align-items: stretch;
+}
+
+/* ── Single Order Card ───────────────────────────────────────────────────── */
+.kitchen-order-card {
+  background-color: #FFFFFF;
+  border: 1px solid #F0E6DE;
+  border-radius: 22px;
+  padding: 1.5rem 1.45rem 1.4rem 1.45rem;
+  box-shadow: 0 10px 28px rgba(45, 16, 7, 0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 400px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kitchen-order-card:hover {
+  box-shadow: 0 14px 34px rgba(45, 16, 7, 0.09);
+}
+
+/* Card Header */
+.kitchen-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #FAF4F0;
+}
+
+.kitchen-card-title-group {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.kitchen-card-table-title {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #9C4A1A;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.kitchen-card-customer-name {
+  font-size: 0.85rem;
+  color: #78716C;
+  font-weight: 500;
+}
+
+.kitchen-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kitchen-card-order-num {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #78716C;
+}
+
+.kitchen-card-close-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: #F5EBE4;
+  color: #8C7D73;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.kitchen-card-close-btn:hover {
+  background-color: #EADBD1;
+  color: #1C1917;
+}
+
+/* Dishes List */
+.kitchen-dishes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin: 1.25rem 0;
+  flex: 1;
+}
+
+.kitchen-dish-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.15rem 0;
+}
+
+.kitchen-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.kitchen-checkbox.unchecked {
+  border: 1.5px solid #D6D3D1;
+  background-color: #FFFFFF;
+}
+
+.kitchen-dish-item:hover .kitchen-checkbox.unchecked {
+  border-color: #B77D56;
+}
+
+.kitchen-checkbox.checked {
+  border: 1.5px solid #C8652D;
+  background-color: #C8652D;
+  color: #FFFFFF;
+}
+
+.kitchen-dish-text-wrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  flex: 1;
+  font-size: 0.925rem;
+  line-height: 1.35;
+}
+
+.kitchen-dish-qty {
+  font-weight: 700;
+  min-width: 14px;
+}
+
+.kitchen-dish-qty.unchecked {
+  color: #1C1917;
+}
+
+.kitchen-dish-qty.checked {
+  color: #C0794F;
+  text-decoration: line-through;
+}
+
+.kitchen-dish-name {
+  font-weight: 500;
+}
+
+.kitchen-dish-name.unchecked {
+  color: #1C1917;
+}
+
+.kitchen-dish-name.checked {
+  color: #C0794F;
+  text-decoration: line-through;
+}
+
+.kitchen-dish-portion {
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.kitchen-dish-notes {
+  font-size: 0.78rem;
+  color: #D97706;
+  font-style: italic;
+  margin-top: 2px;
+  margin-left: 28px;
+}
+
+/* Card Footer */
+.kitchen-card-footer {
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+.kitchen-card-progress-text {
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: #44403C;
+  margin: 0 0 0.85rem 0;
+}
+
+.kitchen-card-action-btn {
+  width: 100%;
+  height: 46px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.kitchen-card-action-btn:hover {
+  opacity: 0.94;
+  transform: translateY(-1px);
+}
+
+.kitchen-card-action-btn:active {
+  transform: scale(0.99);
+}
+
+/* 3 Button States as in Reference Image */
+.kitchen-card-action-btn.btn-start {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+.kitchen-card-action-btn.btn-preparing {
+  background-color: #7D8487;
+  color: #FFFFFF;
+}
+
+.kitchen-card-action-btn.btn-ready {
+  background-color: #0E7B5C;
+  color: #FFFFFF;
+}
+
+/* ── Empty Queue State ───────────────────────────────────────────────────── */
+.kitchen-empty-queue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 2rem;
+  text-align: center;
+  color: #78716C;
+  flex: 1;
+}
+
+.kitchen-empty-icon {
+  width: 64px;
+  height: 64px;
+  color: #B77D56;
+  margin-bottom: 1.25rem;
+  opacity: 0.7;
+}
+
+.kitchen-empty-title {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1C1917;
+  margin: 0 0 0.35rem 0;
+}
+
+.kitchen-empty-sub {
+  font-size: 0.9rem;
+  color: #78716C;
+  margin: 0;
+  max-width: 360px;
+}
+
+/* ── Responsive Behavior ─────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .kitchen-portal-sidebar {
+    width: 220px;
+    min-width: 220px;
+  }
+  .kitchen-portal-main {
+    max-width: calc(100vw - 220px);
+    padding: 1.25rem 1.5rem;
+  }
+  .kitchen-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .kitchen-portal-root {
+    flex-direction: column;
+  }
+  .kitchen-portal-sidebar {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    position: relative;
+    padding: 1rem 1.25rem;
+    flex-direction: row;
+    align-items: center;
+  }
+  .kitchen-portal-brand {
+    padding: 0;
+  }
+  .kitchen-portal-sidebar-footer {
+    padding: 0;
+  }
+  .kitchen-portal-main {
+    max-width: 100vw;
+    padding: 1rem 1rem 2rem 1rem;
+  }
+  .kitchen-display-container {
+    padding: 1.5rem 1.25rem;
+    border-radius: 20px;
+  }
+  .kitchen-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
