@@ -5,7 +5,7 @@ services:
     name: restaurant-backend
     runtime: python
     region: singapore
-    buildCommand: ./build.sh
+    buildCommand: bash build.sh
     startCommand: gunicorn tclock.wsgi:application
     rootDir: backend
     envVars:
