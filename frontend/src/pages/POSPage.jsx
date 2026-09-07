@@ -85,6 +85,7 @@ export const POSPage = () => {
     setSelectedTable,
     activeTableOrder,
     loadingActiveOrder,
+    loadActiveTableOrder,
     orderType,
     setOrderType,
     customerName,
