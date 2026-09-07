@@ -375,7 +375,7 @@ export const AdminDashboardPage = () => {
                 style={{ width: '28px', height: '28px', objectFit: 'contain' }}
               />
             </div>
-            <h3 className="admin-table-empty-heading">No tables added yet</h3>
+            <h3 className="admin-table-empty-heading">No Tables Added Yet</h3>
             <p className="admin-table-empty-desc">
               Start setting up your restaurant floor by adding your first table. You can assign seats and locations.
             </p>

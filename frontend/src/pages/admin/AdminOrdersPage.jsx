@@ -303,7 +303,7 @@ export const AdminOrdersPage = () => {
           /* Empty State when no orders exist at all */
           <div className="admin-orders-empty-state">
             <div className="admin-orders-empty-icon-wrap">
-              <FileText size={22} color="#7C3AED" strokeWidth={2} />
+              <FileText size={22} color="#000000ff" strokeWidth={2} />
             </div>
             <h3 className="admin-orders-empty-title">No Orders Yet</h3>
             <p className="admin-orders-empty-desc">
