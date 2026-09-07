@@ -166,24 +166,6 @@ export const AdminDashboardPage = () => {
 
   const todayOrders = summary?.today_orders || summary?.today_bills_count || 0;
 
-  // Table click handler
-  const handleTableClick = (table) => {
-    const status = (table.status || 'available').toLowerCase();
-    if (status === 'no_service' || status === 'inactive') {
-      // Table is deactivated: prevent starting/placing orders
-      return;
-    }
-    setSelectedTable(table);
-
-    if (status === 'billing') {
-      navigate('/admin/orders', { state: { targetTableId: table.id, targetTableNumber: table.number } });
-    } else if (status === 'occupied') {
-      navigate('/admin/orders', { state: { targetTableId: table.id } });
-    } else {
-      navigate('/admin/orders');
-    }
-  };
-
   const handleToggleTableService = async (table) => {
     const rawStatus = (table.status || '').toLowerCase();
     const isCurrentlyInactive = rawStatus === 'no_service' || rawStatus === 'inactive';
@@ -425,7 +407,6 @@ export const AdminDashboardPage = () => {
                   key={table.id}
                   table={table}
                   activeOrder={activeOrd}
-                  onClick={handleTableClick}
                   onEdit={(tbl) => setEditingTable(tbl)}
                   onToggleService={handleToggleTableService}
                   onDelete={handleToggleTableService}

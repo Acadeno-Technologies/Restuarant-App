@@ -91,6 +91,7 @@ export const AdminTableCard = ({
     <div
       className={`admin-table-card admin-table-card--${statusKey}`}
       onClick={() => onClick && onClick(table)}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
     >
       {/* ── Top Row: Table Number & Action Icons ── */}
       <div className="atc-header">
