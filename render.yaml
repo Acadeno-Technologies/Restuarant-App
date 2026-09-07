@@ -32,6 +32,7 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://t-clock-application.onrender.com/api
+        value: https://restuarant-app-q12p.onrender.com/api
+
 
 

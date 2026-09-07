@@ -166,6 +166,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://restaurant-application-1.onrender.com',
     'https://t-clock-application.onrender.com',
     'https://restuarant-app-vy1i.onrender.com',
+    'https://restuarant-app-q12p.onrender.com',
 ]
 CORS_ALLOW_ALL_ORIGINS = True   # Allow all in development
 
@@ -173,6 +174,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://restaurant-application-1.onrender.com',
     'https://t-clock-application.onrender.com',
     'https://restuarant-app-vy1i.onrender.com',
+    'https://restuarant-app-q12p.onrender.com',
     'http://localhost:5173',
     'http://localhost:3000',
     'http://127.0.0.1:5173',
