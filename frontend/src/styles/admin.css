@@ -6001,6 +6001,7 @@
   position: relative;
   display: inline-flex;
   align-items: center;
+  gap: 6px;
 }
 
 .admin-orders-date-pill {
@@ -6018,6 +6019,7 @@
   position: relative;
   font-family: 'Inter', sans-serif;
   transition: all 0.15s ease;
+  user-select: none;
 }
 
 .admin-orders-date-pill:hover {
@@ -6025,14 +6027,43 @@
   color: #1E1B18;
 }
 
+.admin-orders-date-pill.has-date {
+  background: #200604;
+  color: #FFFFFF;
+  border-color: #200604;
+}
+
+.admin-orders-date-pill.has-date span {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
 .admin-orders-hidden-date-input {
   position: absolute;
   opacity: 0;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.admin-orders-date-clear-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #EAE3DC;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.admin-orders-date-clear-btn:hover {
+  background: #FEE2E2;
+  border-color: #FCA5A5;
 }
 
 .admin-orders-trash-btn {

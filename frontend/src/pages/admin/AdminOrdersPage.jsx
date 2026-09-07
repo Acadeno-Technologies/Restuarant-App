@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ordersApi } from '../../api/ordersApi';
 import { useAuth } from '../../context/AuthContext';
@@ -24,6 +24,24 @@ export const AdminOrdersPage = () => {
   const [search, setSearch] = useState('');
   const [timeFilter, setTimeFilter] = useState('today'); // 'today' | 'weekly' | 'monthly' | 'all' | 'custom'
   const [selectedDate, setSelectedDate] = useState('');
+  const dateInputRef = useRef(null);
+
+  const handleOpenDatePicker = (e) => {
+    e?.preventDefault?.();
+    if (dateInputRef.current) {
+      if (typeof dateInputRef.current.showPicker === 'function') {
+        try {
+          dateInputRef.current.showPicker();
+        } catch (err) {
+          dateInputRef.current.focus();
+          dateInputRef.current.click();
+        }
+      } else {
+        dateInputRef.current.focus();
+        dateInputRef.current.click();
+      }
+    }
+  };
   const [selectedBillOrder, setSelectedBillOrder] = useState(null);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedOrderIds, setSelectedOrderIds] = useState([]);
@@ -99,7 +117,17 @@ export const AdminOrdersPage = () => {
   };
 
   // Helper date matchers
+  const parseLocalDate = (dateStr) => {
+    if (!dateStr) return null;
+    if (typeof dateStr === 'string' && dateStr.includes('-') && dateStr.length === 10) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+    return new Date(dateStr);
+  };
+
   const isSameDay = (d1, d2) => {
+    if (!d1 || !d2) return false;
     return (
       d1.getFullYear() === d2.getFullYear() &&
       d1.getMonth() === d2.getMonth() &&
@@ -110,8 +138,8 @@ export const AdminOrdersPage = () => {
   const formatDisplayDate = (dateString) => {
     if (!dateString) return '';
     try {
-      const d = new Date(dateString);
-      if (isNaN(d.getTime())) return dateString;
+      const d = parseLocalDate(dateString);
+      if (!d || isNaN(d.getTime())) return dateString;
       return d.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -160,8 +188,8 @@ export const AdminOrdersPage = () => {
     if (selectedDate) {
       if (!o.created_at) return false;
       const orderDate = new Date(o.created_at);
-      const sel = new Date(selectedDate);
-      if (!isSameDay(orderDate, sel)) return false;
+      const sel = parseLocalDate(selectedDate);
+      if (!sel || !isSameDay(orderDate, sel)) return false;
     } else if (timeFilter === 'today') {
       if (o.created_at) {
         const orderDate = new Date(o.created_at);
@@ -360,20 +388,39 @@ export const AdminOrdersPage = () => {
 
               <div className="admin-orders-filter-actions">
                 <div className="admin-orders-date-pill-wrapper">
-                  <label className="admin-orders-date-pill">
-                    <Calendar size={14} color="#78716C" />
+                  <button
+                    type="button"
+                    className={`admin-orders-date-pill ${selectedDate ? 'has-date' : ''}`}
+                    onClick={handleOpenDatePicker}
+                  >
+                    <Calendar size={14} color={selectedDate ? '#FFFFFF' : '#78716C'} />
                     <span>{selectedDate ? formatDisplayDate(selectedDate) : todayFormattedPill}</span>
-                    <ChevronDown size={14} color="#78716C" />
-                    <input
-                      type="date"
-                      value={selectedDate}
-                      onChange={(e) => {
-                        setSelectedDate(e.target.value);
-                        setTimeFilter('custom');
+                    <ChevronDown size={14} color={selectedDate ? '#FFFFFF' : '#78716C'} />
+                  </button>
+                  <input
+                    ref={dateInputRef}
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => {
+                      setSelectedDate(e.target.value);
+                      setTimeFilter('custom');
+                    }}
+                    className="admin-orders-hidden-date-input"
+                  />
+                  {selectedDate && (
+                    <button
+                      type="button"
+                      className="admin-orders-date-clear-btn"
+                      title="Clear date filter"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedDate('');
+                        setTimeFilter('today');
                       }}
-                      className="admin-orders-hidden-date-input"
-                    />
-                  </label>
+                    >
+                      <X size={13} color="#78716C" />
+                    </button>
+                  )}
                 </div>
 
                 <button
