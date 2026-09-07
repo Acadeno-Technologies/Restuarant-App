@@ -212,26 +212,21 @@ export const KitchenScreenPage = () => {
             <img
               src="/Bell.svg"
               alt="Notifications"
-              style={{ width: '22px', height: '22px', objectFit: 'contain' }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
+              style={{ width: '24px', height: '24px', objectFit: 'contain' }}
             />
           </button>
 
-          <div
+          <button
             className="kitchen-header-avatar-btn"
+            type="button"
             title={user?.username || 'Kitchen Staff'}
           >
             <img
               src="/profile.svg"
               alt="Profile"
-              style={{ width: '24px', height: '24px', objectFit: 'contain' }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
+              style={{ width: '22px', height: '22px', objectFit: 'contain' }}
             />
-          </div>
+          </button>
         </div>
       </header>
 
