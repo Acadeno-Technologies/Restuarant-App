@@ -5,6 +5,7 @@ import { Search, Plus, Edit2, Trash2 } from 'lucide-react';
 import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
 import { AddStaffModal } from '../../components/admin/AddStaffModal';
 import { EditStaffModal } from '../../components/admin/EditStaffModal';
+import '../../styles/admin.css';
 
 // Palette of background colors for initials avatar matching reference design
 const AVATAR_COLORS = [

@@ -6,6 +6,59 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User, CustomRole
 
 
+import datetime
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime, parse_date
+
+
+def parse_flexible_date(value):
+    if not value:
+        return None
+    if isinstance(value, datetime.datetime):
+        return timezone.make_aware(value) if timezone.is_naive(value) else value
+    if isinstance(value, datetime.date):
+        dt = datetime.datetime.combine(value, datetime.time.min)
+        return timezone.make_aware(dt) if timezone.is_naive(dt) else dt
+
+    val_str = str(value).strip()
+    if not val_str or val_str == '—':
+        return None
+
+    # Try Django's parse_datetime & parse_date
+    parsed = parse_datetime(val_str)
+    if parsed:
+        return timezone.make_aware(parsed) if timezone.is_naive(parsed) else parsed
+
+    p_date = parse_date(val_str)
+    if p_date:
+        dt = datetime.datetime.combine(p_date, datetime.time.min)
+        return timezone.make_aware(dt) if timezone.is_naive(dt) else dt
+
+    formats = [
+        '%d %b %Y',      # 19 Aug 2026
+        '%d %B %Y',      # 19 August 2026
+        '%d %b, %Y',     # 19 Aug, 2026
+        '%d %B, %Y',     # 19 August, 2026
+        '%Y-%m-%d',      # 2026-08-19
+        '%d/%m/%Y',      # 19/08/2026
+        '%d-%m-%Y',      # 19-08-2026
+        '%m/%d/%Y',      # 08/19/2026
+        '%Y/%m/%d',      # 2026/08/19
+        '%b %d, %Y',     # Aug 19, 2026
+        '%B %d, %Y',     # August 19, 2026
+        '%b %d %Y',      # Aug 19 2026
+        '%B %d %Y',      # August 19 2026
+    ]
+    for fmt in formats:
+        try:
+            dt = datetime.datetime.strptime(val_str, fmt)
+            return timezone.make_aware(dt) if timezone.is_naive(dt) else dt
+        except ValueError:
+            pass
+
+    return None
+
+
 def validate_clean_phone(value):
     if value:
         clean_phone = ''.join(filter(str.isdigit, str(value)))
@@ -73,11 +126,12 @@ class UserSerializer(serializers.ModelSerializer):
     custom_role_data = CustomRoleSerializer(source='custom_role', read_only=True)
     password = serializers.CharField(write_only=True, required=False, allow_blank=True)
     email = serializers.CharField(required=False, allow_blank=True)
+    date_joined = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'phone', 'custom_role', 'custom_role_data', 'date_joined', 'is_active', 'raw_password', 'password']
-        read_only_fields = ['id', 'date_joined']
+        read_only_fields = ['id']
 
     def validate_phone(self, value):
         return validate_clean_phone(value)
@@ -87,8 +141,13 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
+        date_joined_val = validated_data.pop('date_joined', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+        if date_joined_val:
+            parsed_dt = parse_flexible_date(date_joined_val)
+            if parsed_dt:
+                instance.date_joined = parsed_dt
         if password and str(password).strip():
             pwd_clean = str(password).strip()
             instance.set_password(pwd_clean)
@@ -100,10 +159,11 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=4)
     email = serializers.CharField(required=False, allow_blank=True)
+    date_joined = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'role', 'phone', 'custom_role']
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'role', 'phone', 'custom_role', 'date_joined']
 
     def validate_phone(self, value):
         return validate_clean_phone(value)
@@ -113,6 +173,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data['password']
+        date_joined_val = validated_data.pop('date_joined', None)
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data.get('email', ''),
@@ -127,6 +188,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         if custom_role:
             user.custom_role = custom_role
             user.role = custom_role.base_access
+        if date_joined_val:
+            parsed_dt = parse_flexible_date(date_joined_val)
+            if parsed_dt:
+                user.date_joined = parsed_dt
         user.save()
         return user
 

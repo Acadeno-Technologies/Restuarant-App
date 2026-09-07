@@ -5895,15 +5895,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 16px;
+  padding: 64px 16px 56px 16px;
   text-align: center;
 }
 
 .admin-orders-empty-icon-wrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #F6EFE9;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #EDE9FE;
+  border: 1.8px solid #8B5CF6;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5914,16 +5915,16 @@
   font-family: 'Inter', sans-serif;
   font-size: 16px;
   font-weight: 700;
-  color: #1E1B18;
+  color: #111827;
   margin: 0 0 6px 0;
 }
 
 .admin-orders-empty-desc {
-  font-size: 13px;
-  color: #78716C;
-  max-width: 420px;
+  font-size: 11.5px;
+  color: #6B7280;
+  max-width: 380px;
   text-align: center;
-  margin: 0 0 20px 0;
+  margin: 0 0 18px 0;
   line-height: 1.45;
 }
 
@@ -5931,9 +5932,9 @@
   background: #200604;
   color: #FFFFFF;
   border-radius: 9999px;
-  padding: 10px 24px;
+  padding: 8px 20px;
   font-family: 'Inter', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   border: none;
   cursor: pointer;
@@ -5946,54 +5947,205 @@
   transform: translateY(-1px);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   FILTER CONTROLS ROW (Today's, Weekly, Monthly + Date + Reset)
+   ═══════════════════════════════════════════════════════════════ */
+.admin-orders-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-orders-pill-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-orders-pill-tab {
+  background: #F4EFEA;
+  color: #574F49;
+  border: 1px solid #EAE3DC;
+  border-radius: 9999px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-orders-pill-tab:hover {
+  background: #EDE5DE;
+  color: #1E1B18;
+}
+
+.admin-orders-pill-tab.active {
+  background: #200604;
+  color: #FFFFFF;
+  border-color: #200604;
+  font-weight: 600;
+}
+
+.admin-orders-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-orders-date-pill-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.admin-orders-date-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #F4EFEA;
+  border: 1px solid #EAE3DC;
+  border-radius: 9999px;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #574F49;
+  cursor: pointer;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s ease;
+}
+
+.admin-orders-date-pill:hover {
+  background: #EDE5DE;
+  color: #1E1B18;
+}
+
+.admin-orders-hidden-date-input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+.admin-orders-trash-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #EAE3DC;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-orders-trash-btn:hover {
+  background: #FEE2E2;
+  border-color: #FCA5A5;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ORDERS DATA TABLE (Exact Reference Design Matching)
+   ═══════════════════════════════════════════════════════════════ */
 .admin-orders-table-wrapper {
   overflow-x: auto;
   width: 100%;
+  border: 1px solid #EDE7E1;
+  border-radius: 12px;
+  background: #FFFFFF;
 }
 
 .admin-orders-table {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
+  text-align: center;
 }
 
 .admin-orders-table th {
-  padding: 12px 16px;
-  font-size: 11.5px;
+  padding: 14px 16px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #78716C;
-  border-bottom: 1px solid #F0EAE4;
-  background: #FAFAF8;
+  color: #8C827A;
+  border-bottom: 1px solid #EDE7E1;
+  background: #FBF9F7;
+  text-align: center;
 }
 
 .admin-orders-table td {
-  padding: 14px 16px;
+  padding: 18px 16px;
   font-size: 13.5px;
   color: #1E1B18;
   border-bottom: 1px solid #F4EFEA;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.admin-orders-table tr:last-child td {
+  border-bottom: none;
 }
 
 .admin-orders-table tr:hover td {
   background: #FAF8F6;
 }
 
+.admin-orders-cell-id {
+  font-weight: 600;
+  color: #1E1B18;
+  font-size: 13.5px;
+}
+
+.admin-orders-cell-table {
+  color: #2D2926;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.admin-orders-cell-type {
+  color: #574F49;
+  font-size: 13.5px;
+}
+
+.admin-orders-cell-amount {
+  font-weight: 600;
+  color: #1E1B18;
+  font-size: 13.5px;
+}
+
+.admin-orders-cell-datetime {
+  color: #574F49;
+  font-size: 13px;
+}
+
 .admin-orders-view-btn {
-  background: #200604;
+  background: #C45A3E;
   color: #FFFFFF;
-  border-radius: 9999px;
-  height: 32px;
-  padding: 0 16px;
-  font-size: 12.5px;
+  border-radius: 6px;
+  padding: 6px 20px;
+  font-size: 12px;
   font-weight: 600;
   border: none;
   cursor: pointer;
   transition: all 0.15s ease;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .admin-orders-view-btn:hover {
-  background: #3A100B;
+  background: #B04E34;
+  transform: translateY(-1px);
 }
 
 @media (max-width: 1024px) {
@@ -6394,7 +6546,7 @@
 .admin-staff-table {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
+  text-align: center;
 }
 
 .admin-staff-table th {
@@ -6406,6 +6558,7 @@
   color: #8C827A;
   border-bottom: 1px solid #F0EAE4;
   background: transparent;
+  text-align: center;
 }
 
 .admin-staff-table td {
@@ -6414,6 +6567,7 @@
   color: #1E1B18;
   border-bottom: 1px solid #F4EFEA;
   vertical-align: middle;
+  text-align: center;
 }
 
 .admin-staff-table tr:hover td {
@@ -6421,8 +6575,9 @@
 }
 
 .admin-staff-name-cell {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
 }
 
@@ -6471,6 +6626,7 @@
 .admin-staff-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 

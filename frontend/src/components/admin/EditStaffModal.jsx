@@ -9,6 +9,27 @@ const CORE_ROLES = ['Staff', 'Chef', 'Admin'];
 export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
   useLockBodyScroll(isOpen);
 
+  const formatInitialDate = (dateString) => {
+    if (!dateString) {
+      return new Date().toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+    }
+    try {
+      const d = new Date(dateString);
+      if (isNaN(d.getTime())) return dateString;
+      return d.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
   const [formData, setFormData] = useState({
     first_name: '',
     username: '',
@@ -17,6 +38,7 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
     role_title: 'Staff',
     email: '',
     phone: '',
+    joining_date: '',
   });
 
   const [roleOptions, setRoleOptions] = useState(CORE_ROLES);
@@ -51,6 +73,7 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
         role_title: initialRoleTitle,
         email: staff.email || '',
         phone: staff.phone || '',
+        joining_date: formatInitialDate(staff.date_joined),
       });
       setShowPassword(false);
       setOpenDropdown(false);
@@ -185,6 +208,7 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
         email: emailVal,
         phone: phoneVal,
         role: formData.role,
+        date_joined: formData.joining_date,
       };
 
       if (formData.password.trim()) {
@@ -425,6 +449,20 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
                 className="admin-staff-modal-input"
               />
             </div>
+          </div>
+
+          {/* Row 5: Joining Date */}
+          <div>
+            <label className="admin-staff-modal-label">
+              Joining Date
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. 19 Aug 2026"
+              value={formData.joining_date}
+              onChange={(e) => setFormData({ ...formData, joining_date: e.target.value })}
+              className="admin-staff-modal-input"
+            />
           </div>
 
           {/* Bottom Save Button */}

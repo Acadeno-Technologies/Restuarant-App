@@ -171,6 +171,7 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
         email: emailVal,
         phone: phoneVal,
         role: formData.role,
+        date_joined: formData.joining_date,
       });
 
       if (onStaffCreated) {
