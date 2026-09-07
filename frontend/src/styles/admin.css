@@ -1322,6 +1322,8 @@
   justify-content: center;
   padding: 1.5rem;
   box-sizing: border-box;
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .admin-bill-modal {
@@ -1338,6 +1340,7 @@
   box-sizing: border-box;
   padding: 28px 24px 24px 24px;
   scrollbar-width: none;
+  overscroll-behavior: contain;
   animation: adminModalPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1701,6 +1704,8 @@
   justify-content: center;
   padding: 1.5rem;
   box-sizing: border-box;
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .admin-edit-modal-card {
@@ -1713,6 +1718,7 @@
   padding: 28px 26px 26px 26px;
   box-sizing: border-box;
   animation: adminModalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overscroll-behavior: contain;
 }
 
 .admin-edit-modal-close {
@@ -1878,6 +1884,8 @@
   justify-content: center;
   padding: 1.25rem;
   box-sizing: border-box;
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .admin-add-modal-card {
@@ -1890,6 +1898,7 @@
   padding: 28px 26px 24px 26px;
   box-sizing: border-box;
   animation: adminModalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overscroll-behavior: contain;
 }
 
 .admin-add-modal-close {
@@ -2249,6 +2258,8 @@
   justify-content: center;
   padding: 1.5rem;
   box-sizing: border-box;
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .admin-profile-modal-card {
@@ -2262,6 +2273,7 @@
   padding: 24px 22px 24px 22px;
   box-sizing: border-box;
   animation: adminModalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overscroll-behavior: contain;
 }
 
 .admin-profile-modal-close {

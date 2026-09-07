@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Eye, EyeOff, ChevronDown, Check, Plus } from 'lucide-react';
 import { authApi } from '../../api/authApi';
 import { validateEmail, validatePhone } from '../../utils/validation';
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
 const CORE_ROLES = ['Staff', 'Chef', 'Admin'];
 
 export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
+  useLockBodyScroll(isOpen);
+
   const [formData, setFormData] = useState({
     first_name: '',
     username: '',

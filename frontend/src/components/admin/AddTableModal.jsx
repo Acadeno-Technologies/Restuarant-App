@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronDown, Check, Plus } from 'lucide-react';
 import { tablesApi } from '../../api/tablesApi';
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
 /**
  * AddTableModal
@@ -28,6 +29,8 @@ import { tablesApi } from '../../api/tablesApi';
  * - Independent states: showCustomSeatInput & showCustomDiningAreaInput
  */
 export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
+  useLockBodyScroll(isOpen);
+
   const [tableNumber, setTableNumber] = useState('');
   const [capacity, setCapacity] = useState('');
   const [diningArea, setDiningArea] = useState('');

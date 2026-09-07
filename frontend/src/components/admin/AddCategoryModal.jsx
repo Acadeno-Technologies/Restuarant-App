@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { menuApi } from '../../api/menuApi';
 import { X } from 'lucide-react';
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
 /**
  * AddCategoryModal
@@ -11,6 +12,8 @@ import { X } from 'lucide-react';
  * - Dark full-width "Save" button
  */
 export const AddCategoryModal = ({ isOpen, onClose, onCategoryCreated }) => {
+  useLockBodyScroll(isOpen);
+
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

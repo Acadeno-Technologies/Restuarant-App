@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Upload, AlertCircle, ChevronDown, Check, Plus } from 'lucide-react';
 import { menuApi } from '../../api/menuApi';
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
 /**
  * AddMenuItemModal
@@ -27,6 +28,8 @@ import { menuApi } from '../../api/menuApi';
  * - Independent state management for each dropdown and inline add input
  */
 export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategories = [], onItemCreated }) => {
+  useLockBodyScroll(isOpen);
+
   const fileInputRef = useRef(null);
   const modalRef = useRef(null);
 

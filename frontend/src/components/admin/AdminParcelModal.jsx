@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { ordersApi } from '../../api/ordersApi';
 import { AdminBillModal } from './AdminBillModal';
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
 /**
  * Format ISO datetime string to 12-hour time format (e.g. "12:45 PM")
@@ -28,6 +29,8 @@ const formatTime = (dateStr) => {
  * - Clicking "View" opens the exact Bill & Settle modal for that parcel order
  */
 export const AdminParcelModal = ({ isOpen, onClose, onViewBill, onOrderCreated }) => {
+  useLockBodyScroll(isOpen);
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, AlertCircle } from 'lucide-react';
 import { menuApi } from '../../api/menuApi';
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
 /**
  * EditMenuItemModal
@@ -8,6 +9,8 @@ import { menuApi } from '../../api/menuApi';
  * Modal to edit an existing dish / menu item.
  */
 export const EditMenuItemModal = ({ isOpen, onClose, item, categories = [], onItemUpdated }) => {
+  useLockBodyScroll(isOpen);
+
   const [name, setName] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [price, setPrice] = useState('');

@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronDown, Check, Plus, Eye, EyeOff } from 'lucide-react';
 import { authApi } from '../../api/authApi';
 import { validateEmail, validatePhone } from '../../utils/validation';
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
 const CORE_ROLES = ['Staff', 'Chef', 'Admin'];
 
 export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
+  useLockBodyScroll(isOpen);
+
   const getTodayFormatted = () => {
     return new Date().toLocaleDateString('en-GB', {
       day: 'numeric',

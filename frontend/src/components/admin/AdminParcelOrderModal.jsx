@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useOrder } from '../../context/OrderContext';
 import { ordersApi } from '../../api/ordersApi';
 import { X } from 'lucide-react';
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
 /**
  * AdminParcelOrderModal
@@ -20,6 +21,8 @@ export const AdminParcelOrderModal = ({
   onClose,
   onOrderPlaced,
 }) => {
+  useLockBodyScroll(isOpen);
+
   const {
     cartItems,
     updateQuantity,

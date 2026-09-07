@@ -3,6 +3,7 @@ import { X, Eye, EyeOff, Check, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { authApi } from '../../api/authApi';
 import { UserAvatarPlaceholder } from '../common/UserAvatarPlaceholder';
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
 /**
  * AdminProfileModal
@@ -20,6 +21,8 @@ import { UserAvatarPlaceholder } from '../common/UserAvatarPlaceholder';
  * - Full-width dark burgundy Save button (#230704)
  */
 export const AdminProfileModal = ({ isOpen, onClose }) => {
+  useLockBodyScroll(isOpen);
+
   const { user, fetchProfile } = useAuth();
 
   const [username, setUsername] = useState('');

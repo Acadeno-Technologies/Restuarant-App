@@ -3,6 +3,7 @@ import { Printer, X, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import { billingApi } from '../../api/billingApi';
 import { ordersApi } from '../../api/ordersApi';
 import { formatAdminTableNumber } from './AdminTableCard';
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
 /**
  * AdminBillModal
@@ -26,6 +27,8 @@ export const AdminBillModal = ({
   order: propOrder,
   onBillSettled,
 }) => {
+  useLockBodyScroll(isOpen);
+
   const initialOrder = propOrder || activeOrder;
   const [order, setOrder] = useState(initialOrder || null);
   const [loading, setLoading] = useState(false);
