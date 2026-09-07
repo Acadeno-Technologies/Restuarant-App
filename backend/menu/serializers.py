@@ -98,6 +98,17 @@ class CategorySerializer(serializers.ModelSerializer):
 
         return super().to_internal_value(data)
 
+    def validate_name(self, value):
+        if not value or not str(value).strip():
+            raise serializers.ValidationError("Category name cannot be empty.")
+        clean_name = title_case(str(value).strip())
+        qs = Category.objects.filter(name__iexact=clean_name)
+        if self.instance:
+            qs = qs.exclude(id=self.instance.id)
+        if qs.exists():
+            raise serializers.ValidationError(f"A category named '{clean_name}' already exists.")
+        return clean_name
+
     def get_item_count(self, obj):
         if hasattr(obj, '_prefetched_objects_cache') and 'items' in obj._prefetched_objects_cache:
             return sum(1 for item in obj.items.all() if item.is_available)
@@ -120,3 +131,14 @@ class CategoryLightSerializer(serializers.ModelSerializer):
             data['name'] = title_case(data['name'])
 
         return super().to_internal_value(data)
+
+    def validate_name(self, value):
+        if not value or not str(value).strip():
+            raise serializers.ValidationError("Category name cannot be empty.")
+        clean_name = title_case(str(value).strip())
+        qs = Category.objects.filter(name__iexact=clean_name)
+        if self.instance:
+            qs = qs.exclude(id=self.instance.id)
+        if qs.exists():
+            raise serializers.ValidationError(f"A category named '{clean_name}' already exists.")
+        return clean_name

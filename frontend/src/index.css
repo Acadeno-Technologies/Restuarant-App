@@ -6549,8 +6549,12 @@ h6 {
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 20px;
-  flex-wrap: wrap;
   margin-top: 20px;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* ── Category Tabs Row ── */
@@ -6558,8 +6562,19 @@ h6 {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  min-width: 0;
   flex: 1;
+  padding: 4px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-menu-category-tabs-row::-webkit-scrollbar {
+  display: none;
 }
 
 .admin-menu-category-pill {
@@ -6577,10 +6592,13 @@ h6 {
   transition: all 0.15s ease;
   user-select: none;
   box-sizing: border-box;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .admin-menu-category-pill.all-items {
   padding: 6px 18px;
+  flex-shrink: 0;
 }
 
 .admin-menu-category-pill:hover:not(.active) {

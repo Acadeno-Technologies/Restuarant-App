@@ -230,11 +230,19 @@ export const AdminMenuPage = () => {
     }
   };
 
-  // Strict backend categories list
-  const displayCategories = [
-    { id: 'All', name: 'All Items' },
-    ...categories.map((c) => ({ id: c.id, name: c.name, description: c.description })),
-  ];
+  // Strict backend categories list with client-side deduplication safeguard
+  const displayCategories = (() => {
+    const list = [{ id: 'All', name: 'All Items' }];
+    const seen = new Set(['all items']);
+    for (const c of categories) {
+      const key = (c.name || '').trim().toLowerCase();
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        list.push({ id: c.id, name: c.name, description: c.description });
+      }
+    }
+    return list;
+  })();
 
   const hasItems = menuItems && menuItems.length > 0;
 
@@ -633,8 +641,12 @@ export const AdminMenuPage = () => {
       <AddCategoryModal
         isOpen={isAddCatModalOpen}
         onClose={() => setIsAddCatModalOpen(false)}
+        existingCategories={categories}
         onCategoryCreated={(newCat) => {
-          setCategories((prev) => [...prev, newCat]);
+          setCategories((prev) => {
+            const exists = prev.some((c) => c.id === newCat.id || c.name.toLowerCase() === newCat.name.toLowerCase());
+            return exists ? prev : [...prev, newCat];
+          });
           setActiveCategory(newCat.id);
         }}
       />
@@ -642,6 +654,7 @@ export const AdminMenuPage = () => {
       <EditCategoryModal
         isOpen={!!editingCategory}
         category={editingCategory}
+        existingCategories={categories}
         onClose={() => setEditingCategory(null)}
         onCategoryUpdated={handleCategoryUpdated}
       />

@@ -20,7 +20,7 @@ const toTitleCase = (str) => {
     .join(' ');
 };
 
-export const AddCategoryModal = ({ isOpen, onClose, onCategoryCreated }) => {
+export const AddCategoryModal = ({ isOpen, onClose, onCategoryCreated, existingCategories = [] }) => {
   useLockBodyScroll(isOpen);
 
   const [name, setName] = useState('');
@@ -31,8 +31,18 @@ export const AddCategoryModal = ({ isOpen, onClose, onCategoryCreated }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim()) {
+    const cleanName = toTitleCase(name.trim());
+    if (!cleanName) {
       setError('Category name is required');
+      return;
+    }
+
+    // Client-side duplicate check
+    const isDuplicate = existingCategories.some(
+      (c) => c.name && c.name.trim().toLowerCase() === cleanName.toLowerCase()
+    );
+    if (isDuplicate) {
+      setError(`A category named "${cleanName}" already exists.`);
       return;
     }
 
@@ -40,7 +50,7 @@ export const AddCategoryModal = ({ isOpen, onClose, onCategoryCreated }) => {
     setError('');
     try {
       const newCategory = await menuApi.createCategory({
-        name: toTitleCase(name),
+        name: cleanName,
         description: '',
       });
       if (onCategoryCreated) onCategoryCreated(newCategory);

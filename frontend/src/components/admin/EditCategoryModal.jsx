@@ -20,7 +20,7 @@ const toTitleCase = (str) => {
     .join(' ');
 };
 
-export const EditCategoryModal = ({ isOpen, category, onClose, onCategoryUpdated }) => {
+export const EditCategoryModal = ({ isOpen, category, onClose, onCategoryUpdated, existingCategories = [] }) => {
   useLockBodyScroll(isOpen);
 
   const [name, setName] = useState('');
@@ -38,8 +38,18 @@ export const EditCategoryModal = ({ isOpen, category, onClose, onCategoryUpdated
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim()) {
+    const cleanName = toTitleCase(name.trim());
+    if (!cleanName) {
       setError('Category name is required');
+      return;
+    }
+
+    // Client-side duplicate check (excluding current editing category)
+    const isDuplicate = existingCategories.some(
+      (c) => c.id !== category.id && c.name && c.name.trim().toLowerCase() === cleanName.toLowerCase()
+    );
+    if (isDuplicate) {
+      setError(`A category named "${cleanName}" already exists.`);
       return;
     }
 
@@ -47,7 +57,7 @@ export const EditCategoryModal = ({ isOpen, category, onClose, onCategoryUpdated
     setError('');
     try {
       const updatedCategory = await menuApi.updateCategory(category.id, {
-        name: toTitleCase(name),
+        name: cleanName,
       });
       if (onCategoryUpdated) onCategoryUpdated(updatedCategory);
       onClose();
