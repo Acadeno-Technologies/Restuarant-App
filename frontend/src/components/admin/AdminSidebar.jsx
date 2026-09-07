@@ -69,25 +69,6 @@ export const AdminSidebar = () => {
             </NavLink>
           </li>
 
-          {/* Order History */}
-          <li>
-            <NavLink 
-              to="/admin/orders" 
-              className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
-            >
-              {({ isActive }) => (
-                <>
-                  <img 
-                    src={isActive ? "/sidebar3-active.svg" : "/sidebar3.svg"} 
-                    alt="Order History" 
-                    className="admin-portal-nav-img"
-                  />
-                  <span>Order History</span>
-                </>
-              )}
-            </NavLink>
-          </li>
-
           {/* Kitchen Screen */}
           <li>
             <NavLink 
@@ -102,6 +83,25 @@ export const AdminSidebar = () => {
                     className="admin-portal-nav-img"
                   />
                   <span>Kitchen Screen</span>
+                </>
+              )}
+            </NavLink>
+          </li>
+
+          {/* Order History */}
+          <li>
+            <NavLink 
+              to="/admin/orders" 
+              className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
+            >
+              {({ isActive }) => (
+                <>
+                  <img 
+                    src={isActive ? "/sidebar3-active.svg" : "/sidebar3.svg"} 
+                    alt="Order History" 
+                    className="admin-portal-nav-img"
+                  />
+                  <span>Order History</span>
                 </>
               )}
             </NavLink>

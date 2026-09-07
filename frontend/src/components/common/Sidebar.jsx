@@ -72,26 +72,6 @@ export const Sidebar = () => {
             </NavLink>
           </li>
 
-          {/* Order History */}
-          <li>
-            <NavLink 
-              to="/admin/orders" 
-              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
-            >
-              {({ isActive }) => (
-                <>
-                  <img 
-                    src={isActive ? "/sidebar3-active.svg" : "/sidebar3.svg"} 
-                    alt="Order History" 
-                    className="admin-nav-icon"
-                    style={{ width: '20px', height: '20px', objectFit: 'contain' }}
-                  />
-                  <span>Order History</span>
-                </>
-              )}
-            </NavLink>
-          </li>
-
           {/* Kitchen Screen */}
           <li>
             <NavLink 
@@ -107,6 +87,26 @@ export const Sidebar = () => {
                     style={{ width: '20px', height: '20px', objectFit: 'contain' }}
                   />
                   <span>Kitchen Screen</span>
+                </>
+              )}
+            </NavLink>
+          </li>
+
+          {/* Order History */}
+          <li>
+            <NavLink 
+              to="/admin/orders" 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+            >
+              {({ isActive }) => (
+                <>
+                  <img 
+                    src={isActive ? "/sidebar3-active.svg" : "/sidebar3.svg"} 
+                    alt="Order History" 
+                    className="admin-nav-icon"
+                    style={{ width: '20px', height: '20px', objectFit: 'contain' }}
+                  />
+                  <span>Order History</span>
                 </>
               )}
             </NavLink>
