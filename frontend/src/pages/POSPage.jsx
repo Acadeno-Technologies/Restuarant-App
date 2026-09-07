@@ -48,6 +48,12 @@ export const POSPage = () => {
   const [orderSeq, setOrderSeq] = useState(16);
 
   useEffect(() => {
+    if (location.state?.openOrderSheet || location.state?.openCart || location.state?.autoOpenCart) {
+      setShowMobileCart(true);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
     if (showMobileCart) {
       ordersApi.getOrders().then((res) => {
         const list = res.results || res;

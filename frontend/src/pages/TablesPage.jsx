@@ -285,12 +285,16 @@ export const TablesPage = () => {
       return;
     }
 
+    // If status is "occupied", directly open the order view for this table
+    if (status === 'occupied') {
+      setSelectedTable(table);
+      setSelectedOccupiedTable(null);
+      navigate('/pos', { state: { openOrderSheet: true, openCart: true, targetTableId: table.id } });
+      return;
+    }
+
     const isMobile = window.innerWidth <= 768;
     if (isMobile) {
-      if (status === 'occupied') {
-        setSelectedOccupiedTable(table);
-        return;
-      }
       if (status === 'reserved') {
         setSelectedReservedTable(table);
         return;
@@ -314,7 +318,7 @@ export const TablesPage = () => {
   const handleViewOrder = (table) => {
     setSelectedTable(table);
     setSelectedOccupiedTable(null);
-    navigate('/pos', { state: { openOrderSheet: true } });
+    navigate('/pos', { state: { openOrderSheet: true, openCart: true, targetTableId: table.id } });
   };
 
   const handleStartOrderFromReserved = async (table) => {
