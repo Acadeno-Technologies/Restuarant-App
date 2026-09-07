@@ -32,14 +32,14 @@ class TableSerializer(serializers.ModelSerializer):
     def get_active_order_id(self, obj):
         # Return the active (non-billed) order ID for the table
         try:
-            order = obj.orders.exclude(status__in=['billed', 'cancelled']).last()
+            order = obj.orders.exclude(status__in=['billed', 'cancelled']).order_by('-created_at').first()
             return order.id if order else None
         except Exception:
             return None
 
     def get_active_reservation(self, obj):
         try:
-            res = obj.reservations.filter(status__in=['awaiting_guest', 'confirmed']).last()
+            res = obj.reservations.filter(status__in=['awaiting_guest', 'confirmed']).order_by('-id').first()
             return ReservationSerializer(res).data if res else None
         except Exception:
             return None

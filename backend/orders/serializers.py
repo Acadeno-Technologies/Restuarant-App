@@ -6,9 +6,9 @@ from menu.serializers import MenuItemSerializer
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    menu_item_name = serializers.CharField(source='menu_item.name', read_only=True)
+    menu_item_name = serializers.SerializerMethodField()
     menu_item_image = serializers.SerializerMethodField()
-    is_veg = serializers.BooleanField(source='menu_item.is_veg', read_only=True)
+    is_veg = serializers.SerializerMethodField()
     subtotal = serializers.ReadOnlyField()
 
     class Meta:
@@ -18,10 +18,20 @@ class OrderItemSerializer(serializers.ModelSerializer):
             'is_veg', 'quantity', 'unit_price', 'portion', 'subtotal', 'notes', 'status',
         ]
 
+    def get_menu_item_name(self, obj):
+        if obj.menu_item:
+            return obj.menu_item.name
+        return "Item"
+
     def get_menu_item_image(self, obj):
         if obj.menu_item and obj.menu_item.image:
             return str(obj.menu_item.image)
         return None
+
+    def get_is_veg(self, obj):
+        if obj.menu_item:
+            return obj.menu_item.is_veg
+        return True
 
 
 

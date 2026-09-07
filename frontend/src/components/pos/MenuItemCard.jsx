@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingCart, Plus, Minus } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 import { resolveImageUrl } from '../../utils/imageUrl';
 
 /**
@@ -134,10 +134,7 @@ const MenuItemCard = ({
             }}
           >
             {item.is_available ? (
-              <>
-                <ShoppingCart size={15} strokeWidth={2.5} style={{ flexShrink: 0 }} />
-                <span>Add</span>
-              </>
+              <span>Add</span>
             ) : (
               <span>Out of Stock</span>
             )}

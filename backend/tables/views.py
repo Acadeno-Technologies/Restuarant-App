@@ -14,6 +14,28 @@ class TableListCreateView(generics.ListCreateAPIView):
     serializer_class = TableSerializer
 
     def get_queryset(self):
+        # Sync status for all active tables based on non-billed orders & reservations
+        for table in DiningTable.objects.filter(is_active=True):
+            if table.status in ['no_service', 'inactive']:
+                continue
+            active_orders = table.orders.exclude(status__in=['billed', 'cancelled'])
+            active_res = table.reservations.filter(status__in=['awaiting_guest', 'confirmed'])
+            
+            if active_orders.exists():
+                latest_order = active_orders.order_by('-created_at').first()
+                if latest_order.status in ['served', 'ready']:
+                    target_status = 'billing'
+                else:
+                    target_status = 'occupied'
+            elif active_res.exists():
+                target_status = 'reserved'
+            else:
+                target_status = 'available'
+            
+            if table.status != target_status:
+                table.status = target_status
+                table.save(update_fields=['status'])
+
         qs = DiningTable.objects.filter(is_active=True).prefetch_related(
             'orders',
             'reservations'
