@@ -37,12 +37,18 @@ export const KitchenSidebar = () => {
         <nav className="kitchen-portal-nav">
           <NavLink
             to="/kitchen-screen"
-            className="kitchen-portal-nav-link"
+            className={({ isActive }) => `kitchen-portal-nav-link ${isActive ? 'active' : ''}`}
           >
-            <span className="kitchen-portal-nav-icon">
-              <UtensilsCrossed size={20} strokeWidth={2.5} />
-            </span>
-            <span>Kitchen Screen</span>
+            {({ isActive }) => (
+              <>
+                <img
+                  src={isActive ? '/sidebar4-active.svg' : '/sidebar4.svg'}
+                  alt="Kitchen Screen"
+                  style={{ width: '21px', height: '21px', objectFit: 'contain' }}
+                />
+                <span>Kitchen Screen</span>
+              </>
+            )}
           </NavLink>
         </nav>
       </div>

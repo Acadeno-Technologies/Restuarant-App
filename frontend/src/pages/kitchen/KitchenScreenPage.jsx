@@ -209,14 +209,28 @@ export const KitchenScreenPage = () => {
             title="Notifications"
             onClick={loadQueue}
           >
-            <Bell size={20} />
+            <img
+              src="/Bell.svg"
+              alt="Notifications"
+              style={{ width: '22px', height: '22px', objectFit: 'contain' }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
+            />
           </button>
 
           <div
             className="kitchen-header-avatar-btn"
             title={user?.username || 'Kitchen Staff'}
           >
-            {user?.first_name ? user.first_name[0].toUpperCase() : 'K'}
+            <img
+              src="/profile.svg"
+              alt="Profile"
+              style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
+            />
           </div>
         </div>
       </header>
