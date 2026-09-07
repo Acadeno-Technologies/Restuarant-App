@@ -75,7 +75,7 @@ export const AdminLoginPage = () => {
         </div>
 
         {/* Heading */}
-        <h1 className="admin-signup-title" style={{ marginBottom: '32px' }}>
+        <h1 className="admin-signup-title" style={{ marginBottom: '75px' }}>
           Welcome back
         </h1>
 
