@@ -9,6 +9,7 @@ import { AdminTableCard } from '../../components/admin/AdminTableCard';
 import { AddTableModal } from '../../components/admin/AddTableModal';
 import { EditTableModal } from '../../components/admin/EditTableModal';
 import { AdminBillModal } from '../../components/admin/AdminBillModal';
+import { AdminReserveTableModal } from '../../components/admin/AdminReserveTableModal';
 import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
 import {
   Search,
@@ -54,6 +55,30 @@ export const AdminDashboardPage = () => {
   const [editingTable, setEditingTable] = useState(null);
   const [billModalTable, setBillModalTable] = useState(null);
   const [billModalOrder, setBillModalOrder] = useState(null);
+  const [reservingTable, setReservingTable] = useState(null);
+  const [isSubmittingRes, setIsSubmittingRes] = useState(false);
+
+  const handleTableClick = (table) => {
+    const status = (table.status || 'available').toLowerCase();
+    // Open Reservation Modal ONLY for available tables
+    if (status === 'available') {
+      setReservingTable(table);
+    }
+  };
+
+  const handleConfirmReservation = async ({ tableId, guestName, arrivalTime }) => {
+    setIsSubmittingRes(true);
+    try {
+      await tablesApi.createReservation(tableId, guestName, arrivalTime);
+      setReservingTable(null);
+      await loadDashboardData();
+    } catch (err) {
+      console.error('Failed to reserve table:', err);
+      alert(err.response?.data?.error || err.message || 'Failed to create reservation');
+    } finally {
+      setIsSubmittingRes(false);
+    }
+  };
 
   const handleOpenBillModal = (tbl, ord = null) => {
     const activeOrd = ord || activeOrders.find(
@@ -407,6 +432,7 @@ export const AdminDashboardPage = () => {
                   key={table.id}
                   table={table}
                   activeOrder={activeOrd}
+                  onClick={handleTableClick}
                   onEdit={(tbl) => setEditingTable(tbl)}
                   onToggleService={handleToggleTableService}
                   onDelete={handleToggleTableService}
@@ -430,6 +456,15 @@ export const AdminDashboardPage = () => {
         table={editingTable}
         onClose={() => setEditingTable(null)}
         onTableUpdated={handleTableUpdated}
+      />
+
+      {/* Reserve Table Modal (shown when clicking available table) */}
+      <AdminReserveTableModal
+        isOpen={Boolean(reservingTable)}
+        table={reservingTable}
+        onClose={() => setReservingTable(null)}
+        onConfirm={handleConfirmReservation}
+        isSubmitting={isSubmittingRes}
       />
 
       <AdminBillModal

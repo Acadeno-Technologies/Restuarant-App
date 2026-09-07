@@ -1,7 +1,7 @@
 """T Clock — Tables serializers"""
 
 from rest_framework import serializers
-from .models import DiningTable, Reservation
+from .models import DiningTable, Reservation, title_case
 
 
 class ReservationSerializer(serializers.ModelSerializer):
@@ -13,6 +13,17 @@ class ReservationSerializer(serializers.ModelSerializer):
             'id', 'table', 'table_number', 'guest_name',
             'arrival_time', 'status', 'created_at', 'updated_at'
         ]
+
+    def to_internal_value(self, data):
+        if hasattr(data, '_mutable'):
+            data = data.copy()
+        elif isinstance(data, dict):
+            data = data.copy()
+
+        if 'guest_name' in data and data['guest_name']:
+            data['guest_name'] = title_case(data['guest_name'])
+
+        return super().to_internal_value(data)
 
 
 class TableSerializer(serializers.ModelSerializer):
@@ -28,6 +39,19 @@ class TableSerializer(serializers.ModelSerializer):
             'active_order_id', 'active_reservation',
         ]
         read_only_fields = ['qr_token', 'qr_url']
+
+    def to_internal_value(self, data):
+        if hasattr(data, '_mutable'):
+            data = data.copy()
+        elif isinstance(data, dict):
+            data = data.copy()
+
+        if 'name' in data and data['name']:
+            data['name'] = title_case(data['name'])
+        if 'section' in data and data['section']:
+            data['section'] = title_case(data['section'])
+
+        return super().to_internal_value(data)
 
     def get_active_order_id(self, obj):
         # Return the active (non-billed) order ID for the table

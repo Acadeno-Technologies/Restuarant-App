@@ -1,7 +1,12 @@
-"""T Clock — accounts app models"""
-
+import re
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+
+def title_case(text):
+    if not text:
+        return ''
+    return re.sub(r'(^|[ \-\/])([a-z])', lambda m: m.group(0).upper(), str(text).strip())
 
 
 class CustomRole(models.Model):
@@ -17,6 +22,11 @@ class CustomRole(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.get_base_access_display()})"
+
+    def save(self, *args, **kwargs):
+        if self.name:
+            self.name = title_case(self.name)
+        super().save(*args, **kwargs)
 
 
 class User(AbstractUser):
@@ -36,6 +46,13 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
+
+    def save(self, *args, **kwargs):
+        if self.first_name:
+            self.first_name = title_case(self.first_name)
+        if self.last_name:
+            self.last_name = title_case(self.last_name)
+        super().save(*args, **kwargs)
 
 
 class RestaurantSettings(models.Model):

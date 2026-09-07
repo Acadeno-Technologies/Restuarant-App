@@ -3,7 +3,7 @@
 import re
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import User, CustomRole
+from .models import User, CustomRole, title_case
 
 
 import datetime
@@ -133,6 +133,19 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'phone', 'custom_role', 'custom_role_data', 'date_joined', 'is_active', 'raw_password', 'password']
         read_only_fields = ['id']
 
+    def to_internal_value(self, data):
+        if hasattr(data, '_mutable'):
+            data = data.copy()
+        elif isinstance(data, dict):
+            data = data.copy()
+
+        if 'first_name' in data and data['first_name']:
+            data['first_name'] = title_case(data['first_name'])
+        if 'last_name' in data and data['last_name']:
+            data['last_name'] = title_case(data['last_name'])
+
+        return super().to_internal_value(data)
+
     def validate_phone(self, value):
         return validate_clean_phone(value)
 
@@ -164,6 +177,19 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'first_name', 'last_name', 'role', 'phone', 'custom_role', 'date_joined']
+
+    def to_internal_value(self, data):
+        if hasattr(data, '_mutable'):
+            data = data.copy()
+        elif isinstance(data, dict):
+            data = data.copy()
+
+        if 'first_name' in data and data['first_name']:
+            data['first_name'] = title_case(data['first_name'])
+        if 'last_name' in data and data['last_name']:
+            data['last_name'] = title_case(data['last_name'])
+
+        return super().to_internal_value(data)
 
     def validate_phone(self, value):
         return validate_clean_phone(value)

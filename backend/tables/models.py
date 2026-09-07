@@ -1,7 +1,14 @@
 """T Clock — Tables models"""
 
+import re
 import uuid
 from django.db import models
+
+
+def title_case(text):
+    if not text:
+        return ''
+    return re.sub(r'(^|[ \-\/])([a-z])', lambda m: m.group(0).upper(), str(text).strip())
 
 
 class DiningTable(models.Model):
@@ -36,6 +43,13 @@ class DiningTable(models.Model):
     def __str__(self):
         return f"Table {self.number} — {self.name} ({self.status})"
 
+    def save(self, *args, **kwargs):
+        if self.name:
+            self.name = title_case(self.name)
+        if self.section:
+            self.section = title_case(self.section)
+        super().save(*args, **kwargs)
+
     @property
     def qr_url(self):
         return f"/order/{self.qr_token}/"
@@ -67,6 +81,11 @@ class Reservation(models.Model):
     def __str__(self):
         return f"Reservation for {self.guest_name} at Table {self.table.number} ({self.status})"
 
+    def save(self, *args, **kwargs):
+        if self.guest_name:
+            self.guest_name = title_case(self.guest_name)
+        super().save(*args, **kwargs)
+
 
 class TableOption(models.Model):
     OPTION_TYPES = [
@@ -83,3 +102,8 @@ class TableOption(models.Model):
 
     def __str__(self):
         return f"{self.option_type}: {self.value}"
+
+    def save(self, *args, **kwargs):
+        if self.value and self.option_type == 'section':
+            self.value = title_case(self.value)
+        super().save(*args, **kwargs)
