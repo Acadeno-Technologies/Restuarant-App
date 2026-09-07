@@ -100,7 +100,7 @@ export const LoginPage = () => {
           height: 110px;
           border-radius: 50%;
           overflow: hidden;
-          background-color: #000000;
+          background-color: transparent;
           display: flex;
           align-items: center;
           justify-content: center;

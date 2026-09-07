@@ -51,11 +51,10 @@
   max-height: 36px;
   border-radius: 50%;
   overflow: hidden;
-  background: #000000;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
 }
 
@@ -1089,8 +1088,7 @@
   height: 76px;
   border-radius: 50%;
   overflow: hidden;
-  background: #000000;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
