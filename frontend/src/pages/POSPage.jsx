@@ -156,16 +156,23 @@ export const POSPage = () => {
     if (location.state?.openOrderSheet) {
       setShowMobileCart(true);
     }
+    if (location.state?.tableId) {
+      loadActiveTableOrder(location.state.tableId);
+    }
   }, [location.state]);
 
   const handlePlaceOrder = async () => {
     try {
       setOrderSuccess(null);
       setPlacedOrderSnapshot({
+        id: activeTableOrder?.id || orderSeq,
         items: [...cartItems],
         subtotal: subtotal,
       });
-      await placeOrder();
+      const created = await placeOrder();
+      if (created?.id) {
+        setOrderSeq(created.id);
+      }
       setShowViewOrderButton(false);
       setOrderSuccess('Order Sent to Kitchen 🔥');
       fetchData();
@@ -173,7 +180,7 @@ export const POSPage = () => {
         setOrderSuccess(null);
         setPlacedOrderSnapshot(null);
         setShowMobileCart(false);
-      }, 2500);
+      }, 2000);
     } catch (err) {
       setPlacedOrderSnapshot(null);
       const errorMsg =
@@ -869,13 +876,14 @@ export const POSPage = () => {
                       menu_item: {
                         id: item.menu_item,
                         name: item.menu_item_name || 'Item',
-                        price: parseFloat(item.unit_price || 0),
+                        price: parseFloat(item.unit_price || item.price || 0),
                         image: item.menu_item_image || '',
                       },
                       quantity: item.quantity,
-                      unit_price: parseFloat(item.unit_price || 0),
+                      unit_price: parseFloat(item.unit_price || item.price || 0),
                       portion: item.portion || 'Full',
                       notes: item.notes || '',
+                      isSubmitted: true,
                     }));
                   }
 
@@ -905,32 +913,42 @@ export const POSPage = () => {
                         </div>
 
                         <div className="order-item-qty">
-                          <button
-                            className="order-qty-btn"
-                            onClick={() => updateQuantity(item.menu_item?.id || item.menu_item, item.portion, -1)}
-                          >
-                            −
-                          </button>
-                          <span className="order-qty-num">{item.quantity}</span>
-                          <button
-                            className="order-qty-btn"
-                            onClick={() => updateQuantity(item.menu_item?.id || item.menu_item, item.portion, 1)}
-                          >
-                            +
-                          </button>
+                          {!item.isSubmitted ? (
+                            <>
+                              <button
+                                className="order-qty-btn"
+                                onClick={() => updateQuantity(item.menu_item?.id || item.menu_item, item.portion, -1)}
+                              >
+                                −
+                              </button>
+                              <span className="order-qty-num">{item.quantity}</span>
+                              <button
+                                className="order-qty-btn"
+                                onClick={() => updateQuantity(item.menu_item?.id || item.menu_item, item.portion, 1)}
+                              >
+                                +
+                              </button>
+                            </>
+                          ) : (
+                            <span className="order-qty-num" style={{ fontWeight: 700, minWidth: '24px', textAlign: 'center' }}>
+                              {item.quantity}
+                            </span>
+                          )}
                         </div>
 
                         <div className="order-item-right">
                           <span className="order-item-price">
                             ₹{itemPrice.toFixed(2)}
                           </span>
-                          <button
-                            className="order-item-remove"
-                            onClick={() => removeFromCart(item.menu_item?.id || item.menu_item, item.portion)}
-                            title="Remove item"
-                          >
-                            &times;
-                          </button>
+                          {!item.isSubmitted && (
+                            <button
+                              className="order-item-remove"
+                              onClick={() => removeFromCart(item.menu_item?.id || item.menu_item, item.portion)}
+                              title="Remove item"
+                            >
+                              &times;
+                            </button>
+                          )}
                         </div>
                       </div>
                     );
@@ -947,7 +965,7 @@ export const POSPage = () => {
                   displayItems = cartItems;
                 } else if (activeTableOrder && Array.isArray(activeTableOrder.items)) {
                   displayItems = activeTableOrder.items.map((item) => ({
-                    unit_price: parseFloat(item.unit_price || 0),
+                    unit_price: parseFloat(item.unit_price || item.price || 0),
                     quantity: item.quantity,
                   }));
                 }
@@ -985,7 +1003,7 @@ export const POSPage = () => {
                     id="order-kitchen-notes-input"
                     className="order-kitchen-notes-input"
                     placeholder="Any concerns? e.g. less spicy, no sugar in tea, nut allergy..."
-                    value={orderNotes}
+                    value={orderNotes || (activeTableOrder?.kitchen_notes || activeTableOrder?.notes || '')}
                     onChange={(e) => setOrderNotes(e.target.value)}
                     rows={2}
                   />
@@ -1012,7 +1030,7 @@ export const POSPage = () => {
                   disabled={cartItems.length === 0 || isSubmitting}
                   onClick={handlePlaceOrder}
                 >
-                  {isSubmitting ? 'Placing...' : 'Place Order'}
+                  {isSubmitting ? 'Placing...' : (cartItems.length === 0 && activeTableOrder ? 'Order Placed' : 'Place Order')}
                 </button>
               </div>
             </div>

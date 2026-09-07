@@ -89,7 +89,7 @@ const getStatusConfig = (rawStatus) => {
 
 export const TablesPage = () => {
   const navigate = useNavigate();
-  const { setSelectedTable, setCustomerName, startNewOrderSession } = useOrder();
+  const { setSelectedTable, setCustomerName, startNewOrderSession, viewTableOrderSession } = useOrder();
   const { user, openProfile } = useAuth();
 
   const [tables, setTables] = useState(() => {
@@ -305,8 +305,12 @@ export const TablesPage = () => {
       }
     }
 
-    setSelectedTable(table);
-    navigate('/pos');
+    if (status === 'occupied') {
+      handleViewOrder(table);
+    } else {
+      startNewOrderSession(table);
+      navigate('/pos');
+    }
   };
 
   const handleViewBill = (table) => {
@@ -315,10 +319,14 @@ export const TablesPage = () => {
     navigate('/billing');
   };
 
-  const handleViewOrder = (table) => {
-    setSelectedTable(table);
+  const handleViewOrder = async (table) => {
     setSelectedOccupiedTable(null);
-    navigate('/pos', { state: { openOrderSheet: true } });
+    if (viewTableOrderSession) {
+      await viewTableOrderSession(table);
+    } else {
+      setSelectedTable(table);
+    }
+    navigate('/pos', { state: { openOrderSheet: true, viewingPlacedOrder: true, tableId: table.id } });
   };
 
   const handleStartOrderFromReserved = async (table) => {

@@ -14,10 +14,13 @@ export const OrderProvider = ({ children }) => {
   const [orderNotes, setOrderNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Active cart items are strictly the draft items the user has selected but not yet placed
+  const cartItems = draftItems;
+
   const loadActiveTableOrder = async (tableId) => {
     if (!tableId) {
       setActiveTableOrder(null);
-      return;
+      return null;
     }
     setLoadingActiveOrder(true);
     try {
@@ -26,78 +29,25 @@ export const OrderProvider = ({ children }) => {
 
       if (orderData && orderData.id && Array.isArray(orderData.items)) {
         setActiveTableOrder(orderData);
-        setCustomerName(orderData.customer_name || guestFromTable || '');
-        setCustomerPhone(orderData.customer_phone || '');
-        if (orderData.kitchen_notes || orderData.notes) {
-          setOrderNotes(orderData.kitchen_notes || orderData.notes);
+        if (!customerName) {
+          setCustomerName(orderData.customer_name || guestFromTable || '');
         }
+        if (!customerPhone) {
+          setCustomerPhone(orderData.customer_phone || '');
+        }
+        return orderData;
       } else {
         setActiveTableOrder(null);
+        return null;
       }
     } catch (err) {
       console.error('Error fetching active table order metadata:', err);
       setActiveTableOrder(null);
+      return null;
     } finally {
       setLoadingActiveOrder(false);
     }
   };
-
-  useEffect(() => {
-    if (selectedTable?.id) {
-      loadActiveTableOrder(selectedTable.id);
-    } else {
-      setActiveTableOrder(null);
-      setDraftItems([]);
-      setCustomerName('');
-      setCustomerPhone('');
-      setOrderNotes('');
-    }
-  }, [selectedTable?.id]);
-
-  // Compute unified display cart items = previously submitted items + newly added draft items
-  const cartItems = (() => {
-    const map = new Map();
-
-    // 1. Include submitted items from active table order
-    if (activeTableOrder && Array.isArray(activeTableOrder.items)) {
-      activeTableOrder.items.forEach((item) => {
-        const key = `${item.menu_item}-${item.portion || 'Full'}`;
-        map.set(key, {
-          order_item_id: item.id,
-          menu_item: {
-            id: item.menu_item,
-            name: item.menu_item_name || 'Item',
-            price: parseFloat(item.unit_price || item.price || 0),
-            image: item.menu_item_image || '',
-          },
-          quantity: item.quantity,
-          unit_price: parseFloat(item.unit_price || item.price || 0),
-          portion: item.portion || 'Full',
-          notes: item.notes || '',
-          isSubmitted: true,
-          submittedQuantity: item.quantity,
-        });
-      });
-    }
-
-    // 2. Merge newly added draft items
-    draftItems.forEach((draft) => {
-      const key = `${draft.menu_item?.id}-${draft.portion || 'Full'}`;
-      if (map.has(key)) {
-        const existing = map.get(key);
-        existing.quantity = existing.submittedQuantity + draft.quantity;
-        if (draft.unit_price) existing.unit_price = draft.unit_price;
-      } else {
-        map.set(key, {
-          ...draft,
-          isSubmitted: false,
-          submittedQuantity: 0,
-        });
-      }
-    });
-
-    return Array.from(map.values());
-  })();
 
   const addToCart = (menuItem, portion = 'Full') => {
     setDraftItems((prev) => {
@@ -105,15 +55,15 @@ export const OrderProvider = ({ children }) => {
         (item) => String(item.menu_item?.id) === String(menuItem.id) && item.portion === portion
       );
 
-      let price = parseFloat(menuItem.price);
+      let price = parseFloat(menuItem.price || 0);
       if (portion === 'Half' && menuItem.half_price) {
         price = parseFloat(menuItem.half_price);
       } else if (portion === 'Half') {
-        price = Math.round(parseFloat(menuItem.price) * 0.6);
+        price = Math.round(parseFloat(menuItem.price || 0) * 0.6);
       } else if (portion === 'Quarter' && menuItem.quarter_price) {
         price = parseFloat(menuItem.quarter_price);
       } else if (portion === 'Quarter') {
-        price = Math.round(parseFloat(menuItem.price) * 0.35);
+        price = Math.round(parseFloat(menuItem.price || 0) * 0.35);
       }
 
       if (existingIndex > -1) {
@@ -129,6 +79,7 @@ export const OrderProvider = ({ children }) => {
             unit_price: price,
             portion,
             notes: '',
+            isSubmitted: false,
           },
         ];
       }
@@ -142,43 +93,30 @@ export const OrderProvider = ({ children }) => {
   };
 
   const updateQuantity = (menuItemId, portion, delta) => {
-    let submittedQty = 0;
-    if (activeTableOrder && Array.isArray(activeTableOrder.items)) {
-      const submittedItem = activeTableOrder.items.find(
-        (item) => String(item.menu_item) === String(menuItemId) && (item.portion || 'Full') === portion
-      );
-      if (submittedItem) {
-        submittedQty = submittedItem.quantity;
-      }
-    }
-
     setDraftItems((prev) => {
       const existingIndex = prev.findIndex(
         (item) => String(item.menu_item?.id) === String(menuItemId) && item.portion === portion
       );
 
-      const currentDraftQty = existingIndex > -1 ? prev[existingIndex].quantity : 0;
-      const currentDisplayQty = submittedQty + currentDraftQty;
-      const newDisplayQty = currentDisplayQty + delta;
-      const newDraftQty = Math.max(0, newDisplayQty - submittedQty);
-
       if (existingIndex > -1) {
-        if (newDraftQty > 0) {
+        const newQty = prev[existingIndex].quantity + delta;
+        if (newQty > 0) {
           return prev.map((item, idx) =>
-            idx === existingIndex ? { ...item, quantity: newDraftQty } : item
+            idx === existingIndex ? { ...item, quantity: newQty } : item
           );
         } else {
           return prev.filter((_, idx) => idx !== existingIndex);
         }
-      } else if (newDraftQty > 0) {
+      } else if (delta > 0) {
         return [
           ...prev,
           {
             menu_item: { id: menuItemId },
-            quantity: newDraftQty,
+            quantity: delta,
             unit_price: 0,
             portion,
             notes: '',
+            isSubmitted: false,
           },
         ];
       }
@@ -206,7 +144,7 @@ export const OrderProvider = ({ children }) => {
   };
 
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.unit_price * item.quantity,
+    (sum, item) => sum + (parseFloat(item.unit_price) || 0) * item.quantity,
     0
   );
 
@@ -217,6 +155,16 @@ export const OrderProvider = ({ children }) => {
     setCustomerName(table?.active_reservation?.guest_name || table?.guest_name || '');
     setCustomerPhone('');
     setOrderNotes('');
+    setOrderType('dine_in');
+  };
+
+  const viewTableOrderSession = async (table) => {
+    setSelectedTable(table);
+    setDraftItems([]);
+    setOrderType('dine_in');
+    if (table?.id) {
+      await loadActiveTableOrder(table.id);
+    }
   };
 
   const placeOrder = async () => {
@@ -232,53 +180,60 @@ export const OrderProvider = ({ children }) => {
     try {
       let createdOrder;
       const itemsPayload = draftItems.map((item) => ({
-        menu_item: item.menu_item.id,
+        menu_item: item.menu_item?.id || item.menu_item,
         quantity: item.quantity,
         unit_price: item.unit_price,
-        portion: item.portion,
-        notes: item.notes,
+        portion: item.portion || 'Full',
+        notes: item.notes || '',
       }));
+
+      const tableIdToUpdate = selectedTable?.id;
 
       if (activeTableOrder && activeTableOrder.id) {
         createdOrder = await ordersApi.addItemsToOrder(activeTableOrder.id, {
           items: itemsPayload,
-          notes: orderNotes,
-          kitchen_notes: orderNotes,
+          notes: orderNotes || '',
+          kitchen_notes: orderNotes || '',
         });
       } else {
         const payload = {
           table: orderType === 'dine_in' ? (selectedTable?.id || null) : null,
           order_type: orderType,
-          customer_name: customerName,
-          customer_phone: customerPhone,
-          notes: orderNotes,
-          kitchen_notes: orderNotes,
+          customer_name: customerName || '',
+          customer_phone: customerPhone || '',
+          notes: orderNotes || '',
+          kitchen_notes: orderNotes || '',
           items: itemsPayload,
         };
         createdOrder = await ordersApi.createOrder(payload);
       }
 
+      // 1. Immediately reset active cart state
       setDraftItems([]);
-      if (selectedTable?.id) {
+      setOrderNotes('');
+      setActiveTableOrder(null);
+      setSelectedTable(null);
+
+      // 2. Synchronize local cache and notify table status listeners
+      if (tableIdToUpdate) {
         try {
           const cached = localStorage.getItem('staff_cached_tables');
           if (cached) {
             const list = JSON.parse(cached);
             const updated = list.map((t) =>
-              String(t.id) === String(selectedTable.id) ? { ...t, status: 'occupied' } : t
+              String(t.id) === String(tableIdToUpdate) ? { ...t, status: 'occupied' } : t
             );
             localStorage.setItem('staff_cached_tables', JSON.stringify(updated));
           }
-          window.dispatchEvent(new Event('tablesUpdated'));
         } catch {}
-        await loadActiveTableOrder(selectedTable.id);
+        window.dispatchEvent(new Event('tablesUpdated'));
       }
+
       return createdOrder;
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   return (
     <OrderContext.Provider
@@ -289,7 +244,9 @@ export const OrderProvider = ({ children }) => {
         selectedTable,
         setSelectedTable,
         startNewOrderSession,
+        viewTableOrderSession,
         activeTableOrder,
+        setActiveTableOrder,
         loadingActiveOrder,
         loadActiveTableOrder,
         orderType,
