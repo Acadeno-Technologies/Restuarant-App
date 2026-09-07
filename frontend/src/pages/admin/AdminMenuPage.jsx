@@ -236,7 +236,7 @@ export const AdminMenuPage = () => {
           title="Admin Profile"
           style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <UserAvatarPlaceholder user={user} size={42} />
+          <UserAvatarPlaceholder user={user} size={46} />
         </div>
       </div>
 

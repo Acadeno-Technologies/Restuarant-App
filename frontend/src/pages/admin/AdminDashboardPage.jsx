@@ -68,10 +68,10 @@ export const AdminDashboardPage = () => {
   // Dynamic greeting based on time of day
   const getGreeting = () => {
     const hour = new Date().getHours();
-    const name = user?.first_name || user?.username ? `, ${user.first_name || user.username}` : ', Admin';
-    if (hour < 12) return `Good Morning${name}`;
-    if (hour < 17) return `Good Afternoon${name}`;
-    return `Good Evening${name}`;
+    const rawName = user?.first_name || user?.username || 'Admin';
+    const name = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+    const prefix = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+    return `${prefix} , ${name}`;
   };
 
   const loadDashboardData = async () => {
@@ -256,13 +256,13 @@ export const AdminDashboardPage = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <button type="button" className="admin-search-icon-btn" title="Search">
-              <Search size={20} color="#FFFFFF" strokeWidth={2.5} />
+              <Search size={18} color="#FFFFFF" strokeWidth={2.1} />
             </button>
           </div>
 
           {/* Notification Bell */}
           <div className="admin-bell-circle" title="Notifications">
-            <img src="/Bell.svg" alt="Notifications" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+            <img src="/Bell.svg" alt="Notifications" style={{ width: '21px', height: '21px', objectFit: 'contain' }} />
           </div>
 
           {/* Admin Profile Avatar */}
@@ -272,7 +272,7 @@ export const AdminDashboardPage = () => {
             title="Admin Profile"
             style={{ cursor: 'pointer', background: 'transparent', border: 'none', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
-            <UserAvatarPlaceholder user={user} size={42} />
+            <UserAvatarPlaceholder user={user} size={46} />
           </div>
         </div>
       </div>

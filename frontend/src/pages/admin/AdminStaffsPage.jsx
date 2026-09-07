@@ -145,7 +145,7 @@ export const AdminStaffsPage = () => {
           onClick={openProfile}
           title="Admin Profile"
         >
-          <UserAvatarPlaceholder user={user} size={42} />
+          <UserAvatarPlaceholder user={user} size={46} />
         </div>
       </div>
 
