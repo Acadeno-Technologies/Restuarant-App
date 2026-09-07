@@ -236,8 +236,11 @@ export const EditTableModal = ({ isOpen, table, onClose, onTableUpdated }) => {
           <X size={17} color="#8E8E93" strokeWidth={2.2} />
         </button>
 
-        {/* Centered Dynamic Title */}
-        <h2 className="admin-edit-modal-title">{modalTitle}</h2>
+        {/* Centered Dynamic Title & Subtitle */}
+        <div className="admin-edit-modal-header">
+          <h2 className="admin-edit-modal-title">{modalTitle}</h2>
+          <p className="admin-edit-modal-subtitle">Manage table details and availability</p>
+        </div>
 
         {error && <div className="admin-edit-modal-error">{error}</div>}
 

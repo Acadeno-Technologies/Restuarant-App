@@ -11,6 +11,15 @@ import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
  * - "Category Name" input with rounded rectangle border
  * - Dark full-width "Save" button
  */
+const toTitleCase = (str) => {
+  if (!str) return '';
+  return str
+    .trim()
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 export const EditCategoryModal = ({ isOpen, category, onClose, onCategoryUpdated }) => {
   useLockBodyScroll(isOpen);
 
@@ -38,7 +47,7 @@ export const EditCategoryModal = ({ isOpen, category, onClose, onCategoryUpdated
     setError('');
     try {
       const updatedCategory = await menuApi.updateCategory(category.id, {
-        name: name.trim(),
+        name: toTitleCase(name),
       });
       if (onCategoryUpdated) onCategoryUpdated(updatedCategory);
       onClose();

@@ -75,19 +75,28 @@ export const AdminMenuPage = () => {
       }
 
       if (optRes.status === 'fulfilled' && optRes.value?.diet_types && Array.isArray(optRes.value.diet_types)) {
-        const cleanDiets = optRes.value.diet_types.filter(Boolean);
-        setDietTypeOptions(['All', ...cleanDiets]);
+        const uniqueDiets = [];
+        const seen = new Set(['all']);
+        for (const d of optRes.value.diet_types) {
+          if (d && !seen.has(String(d).toLowerCase())) {
+            seen.add(String(d).toLowerCase());
+            uniqueDiets.push(d);
+          }
+        }
+        setDietTypeOptions(['All', ...uniqueDiets]);
       } else if (itemRes.status === 'fulfilled') {
         const list = itemRes.value.results || itemRes.value;
         if (Array.isArray(list)) {
-          const backendDiets = Array.from(
-            new Set(
-              list
-                .map((i) => i.diet_type || (i.is_veg ? 'Veg' : 'Non-Veg'))
-                .filter(Boolean)
-            )
-          );
-          setDietTypeOptions(['All', ...backendDiets]);
+          const uniqueDiets = [];
+          const seen = new Set(['all']);
+          for (const item of list) {
+            const dt = item.diet_type || (item.is_veg ? 'Veg' : 'Non-Veg');
+            if (dt && !seen.has(dt.toLowerCase())) {
+              seen.add(dt.toLowerCase());
+              uniqueDiets.push(dt);
+            }
+          }
+          setDietTypeOptions(['All', ...uniqueDiets]);
         }
       }
     } catch (err) {
@@ -206,6 +215,13 @@ export const AdminMenuPage = () => {
     ...categories.map((c) => ({ id: c.id, name: c.name, description: c.description })),
   ];
 
+  const hasItems = menuItems && menuItems.length > 0;
+
+  const activeCatObj = categories.find(
+    (c) => String(c.id) === String(activeCategory) || c.name?.toLowerCase() === String(activeCategory).toLowerCase()
+  );
+  const activeCatName = activeCatObj ? activeCatObj.name : (activeCategory !== 'All' ? activeCategory : '');
+
   return (
     <div className="admin-menu-page-root">
       {/* ═══════════════════════════════════════════════════════════════
@@ -251,136 +267,139 @@ export const AdminMenuPage = () => {
             <p className="admin-menu-subtitle">Manage your menu items, categories, pricing, and availability</p>
           </div>
 
-          <div className="admin-menu-header-actions">
-            <button
-              type="button"
-              className="admin-menu-btn-parcel-orders"
-              onClick={() => setIsParcelModalOpen(true)}
-            >
-              Parcel Orders
-            </button>
-            <button
-              type="button"
-              className="admin-menu-btn-add-category"
-              onClick={() => setIsAddCatModalOpen(true)}
-            >
-              + Add Category
-            </button>
-            <button
-              type="button"
-              className="admin-menu-btn-add-item"
-              onClick={() => setIsAddItemModalOpen(true)}
-            >
-              + Add New Item
-            </button>
-          </div>
-        </div>
-
-        {/* Category Tabs & Diet Type Filter Row */}
-        <div className="admin-menu-tabs-and-filter-row">
-          {/* Category Tabs Row (Strictly Backend Categories with Edit/Delete) */}
-          <div className="admin-menu-category-tabs-row">
-            {displayCategories.map((cat) => {
-              const isActive =
-                activeCategory === cat.id ||
-                (activeCategory === 'All' && cat.id === 'All') ||
-                String(activeCategory).toLowerCase() === cat.name.toLowerCase();
-
-              const isAll = cat.id === 'All';
-
-              return (
-                <div
-                  key={cat.id}
-                  className={`admin-menu-category-pill ${isAll ? 'all-items' : ''} ${isActive ? 'active' : ''}`}
-                  onClick={() => setActiveCategory(cat.id)}
-                >
-                  <span className="admin-category-pill-name">{cat.name}</span>
-
-                  {!isAll && (
-                    <div className="admin-category-pill-actions">
-                      <button
-                        type="button"
-                        className="admin-category-pill-action-btn edit"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingCategory(cat);
-                        }}
-                        title={`Edit ${cat.name}`}
-                      >
-                        <Pencil size={11.5} color="#1F2937" strokeWidth={2.4} />
-                      </button>
-                      <button
-                        type="button"
-                        className="admin-category-pill-action-btn delete"
-                        onClick={(e) => handleDeleteCategory(cat, e)}
-                        title={`Delete ${cat.name}`}
-                      >
-                        <Trash2 size={11.5} color="#DC2626" strokeWidth={2.4} />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Diet Type Dropdown on Right */}
-          <div className="admin-diet-filter-wrap">
-            <button
-              type="button"
-              className={`admin-diet-filter-btn ${selectedDietType !== 'All' ? 'active' : ''}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsDietDropdownOpen(!isDietDropdownOpen);
-              }}
-            >
-              <img
-                src="/diet.png"
-                alt="Diet Type"
-                className="admin-diet-icon-img"
-              />
-              <span className="admin-diet-filter-label">
-                {selectedDietType === 'All' ? 'Diet Type' : selectedDietType}
-              </span>
-              <ChevronDown
-                size={14}
-                color="#4B5563"
-                style={{
-                  transform: isDietDropdownOpen ? 'rotate(180deg)' : 'none',
-                  transition: 'transform 0.2s ease',
-                }}
-              />
-            </button>
-
-
-            {isDietDropdownOpen && (
-              <div
-                className="admin-diet-dropdown-menu"
-                onClick={(e) => e.stopPropagation()}
+          {hasItems && (
+            <div className="admin-menu-header-actions">
+              <button
+                type="button"
+                className="admin-menu-btn-parcel-orders"
+                onClick={() => setIsParcelModalOpen(true)}
               >
-                {dietTypeOptions.map((dt) => (
-                  <button
-                    key={dt}
-                    type="button"
-                    className={`admin-diet-dropdown-item ${selectedDietType === dt ? 'active' : ''}`}
-                    onClick={() => {
-                      setSelectedDietType(dt);
-                      setIsDietDropdownOpen(false);
-                    }}
-                  >
-                    <span>{dt === 'All' ? 'All Diet Types' : dt}</span>
-                    {selectedDietType === dt && <span className="admin-diet-check">✓</span>}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+                Parcel Orders
+              </button>
+              <button
+                type="button"
+                className="admin-menu-btn-add-category"
+                onClick={() => setIsAddCatModalOpen(true)}
+              >
+                + Add Category
+              </button>
+              <button
+                type="button"
+                className="admin-menu-btn-add-item"
+                onClick={() => setIsAddItemModalOpen(true)}
+              >
+                + Add New Item
+              </button>
+            </div>
+          )}
         </div>
 
+        {/* Category Tabs & Diet Type Filter Row (Shown when items exist) */}
+        {hasItems && (
+          <>
+            <div className="admin-menu-tabs-and-filter-row">
+              {/* Category Tabs Row (Strictly Backend Categories with Edit/Delete) */}
+              <div className="admin-menu-category-tabs-row">
+                {displayCategories.map((cat) => {
+                  const isActive =
+                    activeCategory === cat.id ||
+                    (activeCategory === 'All' && cat.id === 'All') ||
+                    String(activeCategory).toLowerCase() === cat.name.toLowerCase();
 
+                  const isAll = cat.id === 'All';
 
-        {/* Subtle Horizontal Divider */}
-        <div className="admin-menu-tabs-divider" />
+                  return (
+                    <div
+                      key={cat.id}
+                      className={`admin-menu-category-pill ${isAll ? 'all-items' : ''} ${isActive ? 'active' : ''}`}
+                      onClick={() => setActiveCategory(cat.id)}
+                    >
+                      <span className="admin-category-pill-name">{cat.name}</span>
+
+                      {!isAll && (
+                        <div className="admin-category-pill-actions">
+                          <button
+                            type="button"
+                            className="admin-category-pill-action-btn edit"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingCategory(cat);
+                            }}
+                            title={`Edit ${cat.name}`}
+                          >
+                            <Pencil size={11.5} color="#1F2937" strokeWidth={2.4} />
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-category-pill-action-btn delete"
+                            onClick={(e) => handleDeleteCategory(cat, e)}
+                            title={`Delete ${cat.name}`}
+                          >
+                            <Trash2 size={11.5} color="#DC2626" strokeWidth={2.4} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Diet Type Dropdown on Right */}
+              <div className="admin-diet-filter-wrap">
+                <button
+                  type="button"
+                  className={`admin-diet-filter-btn ${selectedDietType !== 'All' ? 'active' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsDietDropdownOpen(!isDietDropdownOpen);
+                  }}
+                >
+                  <img
+                    src="/diet.png"
+                    alt="Diet Type"
+                    className="admin-diet-icon-img"
+                  />
+                  <span className="admin-diet-filter-label">
+                    {selectedDietType === 'All' ? 'Diet Type' : selectedDietType}
+                  </span>
+                  <ChevronDown
+                    size={14}
+                    color="#4B5563"
+                    style={{
+                      transform: isDietDropdownOpen ? 'rotate(180deg)' : 'none',
+                      transition: 'transform 0.2s ease',
+                    }}
+                  />
+                </button>
+
+                {isDietDropdownOpen && (
+                  <div
+                    className="admin-diet-dropdown-menu"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {dietTypeOptions.map((dt) => (
+                      <button
+                        key={dt}
+                        type="button"
+                        className={`admin-diet-dropdown-item ${selectedDietType === dt ? 'active' : ''}`}
+                        onClick={() => {
+                          setSelectedDietType(dt);
+                          setIsDietDropdownOpen(false);
+                        }}
+                      >
+                        <span>{dt === 'All' ? 'All Diet Types' : dt}</span>
+                        {selectedDietType === dt && <span className="admin-diet-check">✓</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Subtle Horizontal Divider */}
+            <div className="admin-menu-tabs-divider" />
+          </>
+        )}
 
         {/* Content Area */}
         {loading ? (
@@ -392,11 +411,11 @@ export const AdminMenuPage = () => {
           <div className="admin-menu-empty-state">
             <div className="admin-menu-empty-icon-box">
               <img
-                src="/menu-empty.png"
+                src="/withoutmenu.svg"
                 alt="No items found"
                 style={{
-                  width: '46px',
-                  height: '46px',
+                  width: '54px',
+                  height: '48px',
                   objectFit: 'contain',
                   display: 'block',
                 }}
@@ -404,7 +423,11 @@ export const AdminMenuPage = () => {
             </div>
             <h2 className="admin-menu-empty-title">No Items Found</h2>
             <p className="admin-menu-empty-desc">
-              There are no dishes in this category yet. Add your first one to get started.
+              {search
+                ? `No dishes match "${search}". Try searching for something else.`
+                : activeCatName
+                ? `There are no dishes in ${activeCatName} yet. Add your first one to get started.`
+                : `There are no dishes in your menu yet. Add your first one to get started.`}
             </p>
             <button
               type="button"

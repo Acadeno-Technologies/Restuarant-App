@@ -11,6 +11,15 @@ import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
  * - "Category Name" input with rounded rectangle border
  * - Dark full-width "Save" button
  */
+const toTitleCase = (str) => {
+  if (!str) return '';
+  return str
+    .trim()
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 export const AddCategoryModal = ({ isOpen, onClose, onCategoryCreated }) => {
   useLockBodyScroll(isOpen);
 
@@ -31,7 +40,7 @@ export const AddCategoryModal = ({ isOpen, onClose, onCategoryCreated }) => {
     setError('');
     try {
       const newCategory = await menuApi.createCategory({
-        name: name.trim(),
+        name: toTitleCase(name),
         description: '',
       });
       if (onCategoryCreated) onCategoryCreated(newCategory);

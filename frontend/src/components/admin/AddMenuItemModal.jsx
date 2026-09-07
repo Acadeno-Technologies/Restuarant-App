@@ -27,6 +27,15 @@ import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
  * - Full-width dark maroon "Save Dish" button
  * - Independent state management for each dropdown and inline add input
  */
+const toTitleCase = (str) => {
+  if (!str) return '';
+  return str
+    .trim()
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategories = [], onItemCreated }) => {
   useLockBodyScroll(isOpen);
 
@@ -140,17 +149,17 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
   useEffect(() => {
     if (isOpen) {
       setName('');
-      setStatus('available');
       setPrice('');
       setHalfPrice('');
       setQuarterPrice('');
       setDietType('Veg');
       setSpiceLevel('Medium');
+      setStatus('available');
       setImageFile(null);
       setImagePreview('');
       setDescription('');
       setError('');
-      setIsSubmitting(false);
+      setOpenDropdown(null);
     }
   }, [isOpen]);
 
@@ -163,7 +172,7 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
     const rawVal = customCategoryInput.trim();
     if (!rawVal) return;
 
-    // Check duplicate
+    const formattedName = toTitleCase(rawVal);
     const exists = categoryList.some(
       (c) => c.name.toLowerCase() === rawVal.toLowerCase()
     );
@@ -181,7 +190,6 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
     setAddingCategory(true);
     setError('');
     try {
-      const formattedName = rawVal.charAt(0).toUpperCase() + rawVal.slice(1);
       const newCat = await menuApi.createCategory({
         name: formattedName,
         description: `${formattedName} dishes`,
@@ -209,7 +217,7 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
     const rawVal = customDietTypeInput.trim();
     if (!rawVal) return;
 
-    const formatted = rawVal.charAt(0).toUpperCase() + rawVal.slice(1);
+    const formatted = toTitleCase(rawVal);
     setAddingDietType(true);
     setError('');
     try {
@@ -244,7 +252,7 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
     const rawVal = customSpiceLevelInput.trim();
     if (!rawVal) return;
 
-    const formatted = rawVal.charAt(0).toUpperCase() + rawVal.slice(1);
+    const formatted = toTitleCase(rawVal);
     setAddingSpiceLevel(true);
     setError('');
     try {
@@ -330,7 +338,7 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
       const isAvailBool = status === 'available';
 
       const formData = new FormData();
-      formData.append('name', name.trim());
+      formData.append('name', toTitleCase(name));
       if (selectedCatId) {
         formData.append('category', selectedCatId);
       }
@@ -343,8 +351,8 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
         formData.append('quarter_price', parseFloat(quarterPrice).toFixed(2));
       }
       formData.append('is_veg', isVegBool);
-      formData.append('diet_type', dietType || 'Veg');
-      formData.append('spice_level', spiceLevel || 'Medium');
+      formData.append('diet_type', toTitleCase(dietType) || 'Veg');
+      formData.append('spice_level', toTitleCase(spiceLevel) || 'Medium');
 
       formData.append('is_available', isAvailBool);
       formData.append('description', description.trim());
@@ -478,49 +486,48 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
                       </div>
                     )}
 
-                    {/* + Add New Category */}
-                    <div
-                      className="admin-custom-dropdown-add-btn"
-                      style={{
-                        borderTop: categoryList.length > 0 ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
-                        marginTop: categoryList.length > 0 ? '4px' : '0',
-                      }}
-                      onClick={() => {
-                        setShowCustomCategoryInput(true);
-                        setOpenDropdown(null);
-                      }}
-                    >
-                      <Plus size={14} strokeWidth={2.5} />
-                      <span>Add new category</span>
-                    </div>
+                    {/* + Add New Category inside Dropdown Menu */}
+                    {showCustomCategoryInput ? (
+                      <div className="admin-dropdown-inline-add">
+                        <input
+                          type="text"
+                          className="admin-dropdown-inline-input"
+                          placeholder="e.g. Appetizers"
+                          value={customCategoryInput}
+                          onChange={(e) => setCustomCategoryInput(e.target.value)}
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleAddCustomCategory(e);
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="admin-dropdown-inline-add-btn"
+                          onClick={handleAddCustomCategory}
+                          disabled={addingCategory || !customCategoryInput.trim()}
+                        >
+                          {addingCategory ? '...' : 'Add'}
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        className="admin-custom-dropdown-add-btn"
+                        style={{
+                          borderTop: categoryList.length > 0 ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
+                          marginTop: categoryList.length > 0 ? '4px' : '0',
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowCustomCategoryInput(true);
+                        }}
+                      >
+                        <Plus size={14} strokeWidth={2.5} />
+                        <span>Add new category</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-
-              {/* Conditionally Displayed Custom Category Input */}
-              {showCustomCategoryInput && (
-                <div className="admin-inline-add-row">
-                  <input
-                    type="text"
-                    className="admin-inline-add-input"
-                    placeholder="e.g. Appetizers"
-                    value={customCategoryInput}
-                    onChange={(e) => setCustomCategoryInput(e.target.value)}
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleAddCustomCategory(e);
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="admin-inline-add-btn"
-                    onClick={handleAddCustomCategory}
-                    disabled={addingCategory || !customCategoryInput.trim()}
-                  >
-                    {addingCategory ? '...' : 'Add'}
-                  </button>
-                </div>
-              )}
             </div>
 
             {/* 2. Status Dropdown */}
@@ -625,7 +632,7 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
               <label className="admin-add-dish-label">Diet Type</label>
               <div className="admin-custom-select-container">
                 <div
-                  className={`admin-custom-select-trigger admin-add-dish-warm-trigger ${openDropdown === 'dietType' ? 'is-active' : ''}`}
+                  className={`admin-custom-select-trigger ${openDropdown === 'dietType' ? 'is-active' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     setOpenDropdown((prev) => (prev === 'dietType' ? null : 'dietType'));
@@ -657,49 +664,48 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
                       ))}
                     </div>
 
-                    {/* + Add New Diet Type */}
-                    <div
-                      className="admin-custom-dropdown-add-btn"
-                      style={{
-                        borderTop: dietOptions.length > 0 ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
-                        marginTop: dietOptions.length > 0 ? '4px' : '0',
-                      }}
-                      onClick={() => {
-                        setShowCustomDietTypeInput(true);
-                        setOpenDropdown(null);
-                      }}
-                    >
-                      <Plus size={14} strokeWidth={2.5} />
-                      <span>Add new diet type</span>
-                    </div>
+                    {/* + Add New Diet Type inside Dropdown Menu */}
+                    {showCustomDietTypeInput ? (
+                      <div className="admin-dropdown-inline-add">
+                        <input
+                          type="text"
+                          className="admin-dropdown-inline-input"
+                          placeholder="e.g. Vegan, Jain"
+                          value={customDietTypeInput}
+                          onChange={(e) => setCustomDietTypeInput(e.target.value)}
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleAddCustomDietType(e);
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="admin-dropdown-inline-add-btn"
+                          onClick={handleAddCustomDietType}
+                          disabled={addingDietType || !customDietTypeInput.trim()}
+                        >
+                          {addingDietType ? '...' : 'Add'}
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        className="admin-custom-dropdown-add-btn"
+                        style={{
+                          borderTop: dietOptions.length > 0 ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
+                          marginTop: dietOptions.length > 0 ? '4px' : '0',
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowCustomDietTypeInput(true);
+                        }}
+                      >
+                        <Plus size={14} strokeWidth={2.5} />
+                        <span>Add new diet type</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-
-              {/* Conditionally Displayed Custom Diet Type Input */}
-              {showCustomDietTypeInput && (
-                <div className="admin-inline-add-row">
-                  <input
-                    type="text"
-                    className="admin-inline-add-input"
-                    placeholder="e.g. Vegan, Jain"
-                    value={customDietTypeInput}
-                    onChange={(e) => setCustomDietTypeInput(e.target.value)}
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleAddCustomDietType(e);
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="admin-inline-add-btn"
-                    onClick={handleAddCustomDietType}
-                    disabled={addingDietType || !customDietTypeInput.trim()}
-                  >
-                    {addingDietType ? '...' : 'Add'}
-                  </button>
-                </div>
-              )}
             </div>
 
             {/* 4. Spice Level Dropdown */}
@@ -707,7 +713,7 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
               <label className="admin-add-dish-label">Spice Level</label>
               <div className="admin-custom-select-container">
                 <div
-                  className={`admin-custom-select-trigger admin-add-dish-warm-trigger ${openDropdown === 'spiceLevel' ? 'is-active' : ''}`}
+                  className={`admin-custom-select-trigger ${openDropdown === 'spiceLevel' ? 'is-active' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     setOpenDropdown((prev) => (prev === 'spiceLevel' ? null : 'spiceLevel'));
@@ -739,49 +745,48 @@ export const AddMenuItemModal = ({ isOpen, onClose, categories: initialCategorie
                       ))}
                     </div>
 
-                    {/* + Add New Spice Level */}
-                    <div
-                      className="admin-custom-dropdown-add-btn"
-                      style={{
-                        borderTop: spiceOptions.length > 0 ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
-                        marginTop: spiceOptions.length > 0 ? '4px' : '0',
-                      }}
-                      onClick={() => {
-                        setShowCustomSpiceLevelInput(true);
-                        setOpenDropdown(null);
-                      }}
-                    >
-                      <Plus size={14} strokeWidth={2.5} />
-                      <span>Add new spice level</span>
-                    </div>
+                    {/* + Add New Spice Level inside Dropdown Menu */}
+                    {showCustomSpiceLevelInput ? (
+                      <div className="admin-dropdown-inline-add">
+                        <input
+                          type="text"
+                          className="admin-dropdown-inline-input"
+                          placeholder="e.g. Extra Spicy"
+                          value={customSpiceLevelInput}
+                          onChange={(e) => setCustomSpiceLevelInput(e.target.value)}
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleAddCustomSpiceLevel(e);
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="admin-dropdown-inline-add-btn"
+                          onClick={handleAddCustomSpiceLevel}
+                          disabled={addingSpiceLevel || !customSpiceLevelInput.trim()}
+                        >
+                          {addingSpiceLevel ? '...' : 'Add'}
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        className="admin-custom-dropdown-add-btn"
+                        style={{
+                          borderTop: spiceOptions.length > 0 ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
+                          marginTop: spiceOptions.length > 0 ? '4px' : '0',
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowCustomSpiceLevelInput(true);
+                        }}
+                      >
+                        <Plus size={14} strokeWidth={2.5} />
+                        <span>Add new spice level</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-
-              {/* Conditionally Displayed Custom Spice Level Input */}
-              {showCustomSpiceLevelInput && (
-                <div className="admin-inline-add-row">
-                  <input
-                    type="text"
-                    className="admin-inline-add-input"
-                    placeholder="e.g. Extra Spicy"
-                    value={customSpiceLevelInput}
-                    onChange={(e) => setCustomSpiceLevelInput(e.target.value)}
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleAddCustomSpiceLevel(e);
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="admin-inline-add-btn"
-                    onClick={handleAddCustomSpiceLevel}
-                    disabled={addingSpiceLevel || !customSpiceLevelInput.trim()}
-                  >
-                    {addingSpiceLevel ? '...' : 'Add'}
-                  </button>
-                </div>
-              )}
             </div>
           </div>
 

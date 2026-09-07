@@ -76,6 +76,32 @@ class ToggleItemAvailabilityView(generics.UpdateAPIView):
         return Response({'id': item.id, 'is_available': item.is_available})
 
 
+def normalize_diet_value(val):
+    if not val:
+        return ''
+    s = str(val).strip()
+    if s.lower() == 'veg':
+        return 'Veg'
+    if s.lower() in ('non-veg', 'non veg', 'nonveg'):
+        return 'Non-Veg'
+    if s.lower() == 'egg':
+        return 'Egg'
+    return ' '.join(w.capitalize() for w in s.split())
+
+
+def normalize_spice_value(val):
+    if not val:
+        return ''
+    s = str(val).strip()
+    if s.lower() == 'mild':
+        return 'Mild'
+    if s.lower() == 'medium':
+        return 'Medium'
+    if s.lower() in ('hot', 'spicy'):
+        return 'Hot'
+    return ' '.join(w.capitalize() for w in s.split())
+
+
 class MenuOptionsView(generics.GenericAPIView):
     permission_classes = [AllowAny]
 
@@ -88,18 +114,22 @@ class MenuOptionsView(generics.GenericAPIView):
         base_diet = ['Veg', 'Non-Veg']
         base_spice = ['Mild', 'Medium', 'Hot']
 
-        # combine preserving order
+        # combine with case-insensitive deduplication
         all_diet = []
+        seen_diet = set()
         for d in base_diet + item_diets + custom_diet:
-            d_clean = str(d).strip()
-            if d_clean and d_clean not in all_diet:
-                all_diet.append(d_clean)
+            norm = normalize_diet_value(d)
+            if norm and norm.lower() not in seen_diet:
+                seen_diet.add(norm.lower())
+                all_diet.append(norm)
 
         all_spice = []
+        seen_spice = set()
         for s in base_spice + custom_spice:
-            s_clean = str(s).strip()
-            if s_clean and s_clean not in all_spice:
-                all_spice.append(s_clean)
+            norm = normalize_spice_value(s)
+            if norm and norm.lower() not in seen_spice:
+                seen_spice.add(norm.lower())
+                all_spice.append(norm)
 
         return {
             'diet_types': all_diet,
@@ -112,16 +142,23 @@ class MenuOptionsView(generics.GenericAPIView):
 
     def post(self, request):
         option_type = request.data.get('option_type')
-        value = str(request.data.get('value', '')).strip()
+        raw_val = str(request.data.get('value', '')).strip()
 
         if option_type not in ['diet_type', 'spice_level']:
             return Response({'error': 'Invalid option_type. Must be diet_type or spice_level'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not value:
+        if not raw_val:
             return Response({'error': 'Value cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
 
-        value = value.title()
-        MenuOption.objects.get_or_create(option_type=option_type, value=value)
+        if option_type == 'diet_type':
+            value = normalize_diet_value(raw_val)
+        else:
+            value = normalize_spice_value(raw_val)
+
+        existing = MenuOption.objects.filter(option_type=option_type, value__iexact=value).first()
+        if not existing:
+            MenuOption.objects.create(option_type=option_type, value=value)
+
         return Response({
             'message': 'Option saved successfully',
             'added': value,

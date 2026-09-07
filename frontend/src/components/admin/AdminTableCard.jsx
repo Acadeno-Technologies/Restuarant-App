@@ -110,7 +110,7 @@ export const AdminTableCard = ({
                     onEdit(table);
                   }}
                 >
-                  <Pencil size={11} color={isNoService ? '#FFFFFF' : '#475569'} strokeWidth={2.2} />
+                  <Pencil size={14} color={isNoService ? '#FFFFFF' : '#475569'} strokeWidth={2.2} />
                 </button>
               )}
               <button
@@ -119,7 +119,7 @@ export const AdminTableCard = ({
                 title={isNoService ? "Activate Table" : "Deactivate Table"}
                 onClick={handleToggle}
               >
-                <Ban size={11} color={isNoService ? '#FFFFFF' : '#DC2626'} strokeWidth={2.2} />
+                <Ban size={14} color={isNoService ? '#FFFFFF' : '#DC2626'} strokeWidth={2.2} />
               </button>
             </>
           )}
@@ -137,7 +137,7 @@ export const AdminTableCard = ({
               <img
                 src="/print.svg"
                 alt="Print"
-                style={{ width: '16px', height: '16px', objectFit: 'contain' }}
+                style={{ width: '18px', height: '18px', objectFit: 'contain' }}
               />
             </button>
           )}
