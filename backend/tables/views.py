@@ -5,7 +5,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 
-from .models import DiningTable, TableOption
+from django.db.models import Prefetch
+from .models import DiningTable, TableOption, Reservation
+from orders.models import Order
 from .serializers import TableSerializer
 from accounts.permissions import IsAdmin, IsStaffOrAdmin, IsAnyStaff
 
@@ -14,38 +16,55 @@ class TableListCreateView(generics.ListCreateAPIView):
     serializer_class = TableSerializer
 
     def get_queryset(self):
-        # Sync status for all active tables based on non-billed orders & reservations
-        for table in DiningTable.objects.filter(is_active=True):
+        active_orders_prefetch = Prefetch(
+            'orders',
+            queryset=Order.objects.exclude(status__in=['billed', 'cancelled']).order_by('-created_at'),
+            to_attr='prefetched_active_orders'
+        )
+        active_res_prefetch = Prefetch(
+            'reservations',
+            queryset=Reservation.objects.filter(status__in=['awaiting_guest', 'confirmed']).order_by('-created_at'),
+            to_attr='prefetched_active_reservations'
+        )
+
+        qs = list(
+            DiningTable.objects.filter(is_active=True).prefetch_related(
+                active_orders_prefetch,
+                active_res_prefetch
+            )
+        )
+
+        tables_to_update = []
+        for table in qs:
             if table.status in ['no_service', 'inactive']:
                 continue
-            active_orders = table.orders.exclude(status__in=['billed', 'cancelled'])
-            active_res = table.reservations.filter(status__in=['awaiting_guest', 'confirmed'])
-            
-            if active_orders.exists():
-                latest_order = active_orders.order_by('-created_at').first()
+            active_orders = getattr(table, 'prefetched_active_orders', [])
+            active_res = getattr(table, 'prefetched_active_reservations', [])
+
+            if active_orders:
+                latest_order = active_orders[0]
                 if latest_order.status in ['served', 'ready']:
                     target_status = 'billing'
                 else:
                     target_status = 'occupied'
-            elif active_res.exists():
+            elif active_res:
                 target_status = 'reserved'
             else:
                 target_status = 'available'
-            
+
             if table.status != target_status:
                 table.status = target_status
-                table.save(update_fields=['status'])
+                tables_to_update.append(table)
 
-        qs = DiningTable.objects.filter(is_active=True).prefetch_related(
-            'orders',
-            'reservations'
-        )
+        if tables_to_update:
+            DiningTable.objects.bulk_update(tables_to_update, ['status'])
+
         section = self.request.query_params.get('section')
         status_filter = self.request.query_params.get('status')
         if section:
-            qs = qs.filter(section=section)
+            qs = [t for t in qs if t.section == section]
         if status_filter:
-            qs = qs.filter(status=status_filter)
+            qs = [t for t in qs if t.status == status_filter]
         return qs
 
     def get_permissions(self):

@@ -12,7 +12,11 @@ from accounts.permissions import IsAdmin, IsAnyStaff
 
 class CategoryListCreateView(generics.ListCreateAPIView):
     """GET — public (for customers too). POST — Authenticated staff/admin."""
-    queryset = Category.objects.filter(is_active=True)
+
+    def get_queryset(self):
+        if self.request.query_params.get('light'):
+            return Category.objects.filter(is_active=True)
+        return Category.objects.filter(is_active=True).prefetch_related('items')
 
     def get_serializer_class(self):
         if self.request.query_params.get('light'):
@@ -26,7 +30,7 @@ class CategoryListCreateView(generics.ListCreateAPIView):
 
 
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().prefetch_related('items')
     serializer_class = CategorySerializer
     permission_classes = [AllowAny]
 
@@ -36,7 +40,7 @@ class MenuItemListCreateView(generics.ListCreateAPIView):
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_queryset(self):
-        qs = MenuItem.objects.all()
+        qs = MenuItem.objects.select_related('category')
         category = self.request.query_params.get('category')
         available = self.request.query_params.get('available')
         if category:

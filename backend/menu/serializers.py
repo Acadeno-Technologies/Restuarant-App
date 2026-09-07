@@ -99,6 +99,8 @@ class CategorySerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
     def get_item_count(self, obj):
+        if hasattr(obj, '_prefetched_objects_cache') and 'items' in obj._prefetched_objects_cache:
+            return sum(1 for item in obj.items.all() if item.is_available)
         return obj.items.filter(is_available=True).count()
 
 

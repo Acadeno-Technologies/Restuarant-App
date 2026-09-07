@@ -171,8 +171,10 @@ export const BillingPage = () => {
   useEffect(() => {
     loadData();
 
-    // Auto refresh every 6 seconds so incoming ready kitchen orders update live
-    const interval = setInterval(loadData, 6000);
+    // Auto refresh every 8 seconds when tab is active
+    const interval = setInterval(() => {
+      if (!document.hidden) loadData();
+    }, 8000);
     return () => clearInterval(interval);
   }, []);
 

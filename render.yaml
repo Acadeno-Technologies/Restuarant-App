@@ -6,7 +6,7 @@ services:
     runtime: python
     region: singapore
     buildCommand: bash build.sh
-    startCommand: gunicorn tclock.wsgi:application
+    startCommand: gunicorn tclock.wsgi:application --workers 2 --threads 4 --timeout 120
     rootDir: backend
     envVars:
       - key: RENDER

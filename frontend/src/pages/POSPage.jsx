@@ -134,12 +134,16 @@ export const POSPage = () => {
     fetchData(true);
 
     // Auto-sync with Admin backend data updates on tab focus & periodic poll
-    const handleFocus = () => fetchData(false);
+    const handleFocus = () => {
+      if (!document.hidden) fetchData(false);
+    };
     window.addEventListener('focus', handleFocus);
 
     const interval = setInterval(() => {
-      fetchData(false);
-    }, 10000);
+      if (!document.hidden) {
+        fetchData(false);
+      }
+    }, 12000);
 
     return () => {
       window.removeEventListener('focus', handleFocus);

@@ -26,12 +26,14 @@ export const QRCodePage = () => {
   useEffect(() => {
     loadTables();
 
-    const handleFocus = () => loadTables();
+    const handleFocus = () => {
+      if (!document.hidden) loadTables();
+    };
     window.addEventListener('focus', handleFocus);
 
     const interval = setInterval(() => {
-      loadTables();
-    }, 5000);
+      if (!document.hidden) loadTables();
+    }, 10000);
 
     return () => {
       window.removeEventListener('focus', handleFocus);

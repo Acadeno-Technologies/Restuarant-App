@@ -56,6 +56,9 @@ class TableSerializer(serializers.ModelSerializer):
     def get_active_order_id(self, obj):
         # Return the active (non-billed) order ID for the table
         try:
+            if hasattr(obj, 'prefetched_active_orders'):
+                orders = obj.prefetched_active_orders
+                return orders[0].id if orders else None
             order = obj.orders.exclude(status__in=['billed', 'cancelled']).order_by('-created_at').first()
             return order.id if order else None
         except Exception:
@@ -63,6 +66,9 @@ class TableSerializer(serializers.ModelSerializer):
 
     def get_active_reservation(self, obj):
         try:
+            if hasattr(obj, 'prefetched_active_reservations'):
+                res_list = obj.prefetched_active_reservations
+                return ReservationSerializer(res_list[0]).data if res_list else None
             res = obj.reservations.filter(status__in=['awaiting_guest', 'confirmed']).order_by('-id').first()
             return ReservationSerializer(res).data if res else None
         except Exception:

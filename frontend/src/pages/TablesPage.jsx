@@ -140,14 +140,18 @@ export const TablesPage = () => {
     loadTables();
 
     // Auto-sync table status changes live
-    const handleSync = () => loadTables();
+    const handleSync = () => {
+      if (!document.hidden) loadTables();
+    };
     window.addEventListener('focus', handleSync);
     window.addEventListener('tablesUpdated', handleSync);
     window.addEventListener('storage', handleSync);
 
     const interval = setInterval(() => {
-      loadTables();
-    }, 3500);
+      if (!document.hidden) {
+        loadTables();
+      }
+    }, 8000);
 
     return () => {
       window.removeEventListener('focus', handleSync);

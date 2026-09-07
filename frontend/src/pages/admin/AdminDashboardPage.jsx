@@ -141,9 +141,15 @@ export const AdminDashboardPage = () => {
   useEffect(() => {
     loadDashboardData();
 
-    // Auto-sync dashboard every 8 seconds
-    const interval = setInterval(loadDashboardData, 8000);
-    const handleFocus = () => loadDashboardData();
+    // Auto-sync dashboard every 10 seconds only when active
+    const interval = setInterval(() => {
+      if (!document.hidden) {
+        loadDashboardData();
+      }
+    }, 10000);
+    const handleFocus = () => {
+      if (!document.hidden) loadDashboardData();
+    };
     window.addEventListener('focus', handleFocus);
 
     return () => {

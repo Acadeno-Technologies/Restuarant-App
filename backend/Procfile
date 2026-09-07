@@ -1,1 +1,1 @@
-gunicorn tclock.wsgi:application
+web: gunicorn tclock.wsgi:application --workers 2 --threads 4 --timeout 120
