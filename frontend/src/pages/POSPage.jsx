@@ -860,7 +860,7 @@ export const POSPage = () => {
                 <div className="order-table-card-right">
                   <span>
                     {orderType === 'dine_in' ? 'Dine In' : 'Takeaway'} ·{' '}
-                    {(selectedTable?.section || '').toLowerCase().includes('out') ? 'Outdoor' : 'Indoor'} ·{' '}
+                    {selectedTable?.section ? selectedTable.section.charAt(0).toUpperCase() + selectedTable.section.slice(1) : 'Indoor'} ·{' '}
                     {selectedTable?.capacity || 4} seats
                   </span>
                 </div>

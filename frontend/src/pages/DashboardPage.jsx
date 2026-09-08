@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useOrder } from '../context/OrderContext';
@@ -31,10 +31,11 @@ export const DashboardPage = () => {
   const [tables, setTables] = useState([]);
   const [activeOrders, setActiveOrders] = useState([]);
   const [summary, setSummary] = useState(null);
+  const [diningAreas, setDiningAreas] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Filters & Search
-  const [activeFilter, setActiveFilter] = useState('All'); // 'All', 'Indoor', 'Outdoor'
+  const [activeFilter, setActiveFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Modals
@@ -48,6 +49,17 @@ export const DashboardPage = () => {
     if (hour < 12) return `Good Morning${name}`;
     if (hour < 17) return `Good Afternoon${name}`;
     return `Good Evening${name}`;
+  };
+
+  const loadDiningAreas = async () => {
+    try {
+      const data = await tablesApi.getTableOptions();
+      if (data && Array.isArray(data.sections)) {
+        setDiningAreas(data.sections);
+      }
+    } catch (err) {
+      console.error('Failed to load dining areas:', err);
+    }
   };
 
   const loadDashboardData = async () => {
@@ -89,6 +101,18 @@ export const DashboardPage = () => {
 
   useEffect(() => {
     loadDashboardData();
+    loadDiningAreas();
+
+    const handleSync = () => {
+      if (!document.hidden) {
+        loadDashboardData();
+        loadDiningAreas();
+      }
+    };
+
+    window.addEventListener('focus', handleSync);
+    window.addEventListener('tablesUpdated', handleSync);
+    window.addEventListener('tableOptionsUpdated', handleSync);
 
     // Auto-sync dashboard every 10 seconds only when active
     const interval = setInterval(() => {
@@ -96,25 +120,65 @@ export const DashboardPage = () => {
         loadDashboardData();
       }
     }, 10000);
-    const handleFocus = () => {
-      if (!document.hidden) loadDashboardData();
-    };
-    window.addEventListener('focus', handleFocus);
 
     return () => {
       clearInterval(interval);
-      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('focus', handleSync);
+      window.removeEventListener('tablesUpdated', handleSync);
+      window.removeEventListener('tableOptionsUpdated', handleSync);
     };
   }, []);
 
+  // Dynamically compute all unique dining areas
+  const filterOptions = useMemo(() => {
+    const areaMap = new Map();
+
+    // Default base sections
+    areaMap.set('indoor', 'Indoor');
+    areaMap.set('outdoor', 'Outdoor');
+
+    // Sections from backend options API
+    diningAreas.forEach((area) => {
+      if (area && typeof area === 'string' && area.trim()) {
+        const trimmed = area.trim();
+        const lower = trimmed.toLowerCase();
+        if (!areaMap.has(lower)) {
+          const formatted = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+          areaMap.set(lower, formatted);
+        }
+      }
+    });
+
+    // Sections from currently loaded tables
+    tables.forEach((t) => {
+      if (t.section && typeof t.section === 'string' && t.section.trim()) {
+        const trimmed = t.section.trim();
+        const lower = trimmed.toLowerCase();
+        if (!areaMap.has(lower)) {
+          const formatted = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+          areaMap.set(lower, formatted);
+        }
+      }
+    });
+
+    return ['All', ...Array.from(areaMap.values())];
+  }, [diningAreas, tables]);
+
   // Filter tables by Section & Search Query
   const filteredTables = tables.filter((table) => {
-    // Section filter
-    const sec = (table.section || 'indoor').toLowerCase();
-    const matchesFilter =
-      activeFilter === 'All' ||
-      (activeFilter === 'Indoor' && sec.includes('indoor')) ||
-      (activeFilter === 'Outdoor' && (sec.includes('outdoor') || sec.includes('terrace')));
+    const sec = (table.section || 'indoor').trim().toLowerCase();
+    
+    let matchesFilter = true;
+    if (activeFilter !== 'All') {
+      const filterLower = activeFilter.trim().toLowerCase();
+      if (filterLower === 'indoor') {
+        matchesFilter = sec.includes('indoor') || sec === 'main' || !table.section;
+      } else if (filterLower === 'outdoor') {
+        matchesFilter = sec.includes('outdoor') || sec.includes('terrace') || sec === 'out door';
+      } else {
+        matchesFilter = sec === filterLower;
+      }
+    }
 
     // Search query
     const tableNumStr = String(table.number || '').toLowerCase();
@@ -317,11 +381,11 @@ export const DashboardPage = () => {
           <div className="admin-table-overview-right">
             {/* Filter Pills */}
             <div className="admin-filter-pill-group">
-              {['All', 'Indoor', 'Outdoor'].map((filterName) => (
+              {filterOptions.map((filterName) => (
                 <button
                   key={filterName}
                   type="button"
-                  className={`admin-filter-pill ${activeFilter === filterName ? 'active' : ''}`}
+                  className={`admin-filter-pill ${activeFilter.toLowerCase() === filterName.toLowerCase() ? 'active' : ''}`}
                   onClick={() => setActiveFilter(filterName)}
                 >
                   {filterName}

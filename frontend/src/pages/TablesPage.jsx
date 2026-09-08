@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { tablesApi } from '../api/tablesApi';
 import { useOrder } from '../context/OrderContext';
@@ -100,6 +100,7 @@ export const TablesPage = () => {
       return [];
     }
   });
+  const [diningAreas, setDiningAreas] = useState([]);
   const [loading, setLoading] = useState(() => {
     try {
       const cached = localStorage.getItem('staff_cached_tables');
@@ -110,13 +111,24 @@ export const TablesPage = () => {
   });
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Filter State: 'All', 'Indoor', 'Out door'
+  // Filter State
   const [activeFilter, setActiveFilter] = useState('All');
 
   // New Table Form State
   const [tableNumber, setTableNumber] = useState('');
   const [capacity, setCapacity] = useState(4);
   const [floorSection, setFloorSection] = useState('indoor');
+
+  const loadDiningAreas = async () => {
+    try {
+      const data = await tablesApi.getTableOptions();
+      if (data && Array.isArray(data.sections)) {
+        setDiningAreas(data.sections);
+      }
+    } catch (err) {
+      console.error('Failed to load dining areas:', err);
+    }
+  };
 
   // Fetch real database tables
   const loadTables = async () => {
@@ -138,13 +150,18 @@ export const TablesPage = () => {
 
   useEffect(() => {
     loadTables();
+    loadDiningAreas();
 
     // Auto-sync table status changes live
     const handleSync = () => {
-      if (!document.hidden) loadTables();
+      if (!document.hidden) {
+        loadTables();
+        loadDiningAreas();
+      }
     };
     window.addEventListener('focus', handleSync);
     window.addEventListener('tablesUpdated', handleSync);
+    window.addEventListener('tableOptionsUpdated', handleSync);
     window.addEventListener('storage', handleSync);
 
     const interval = setInterval(() => {
@@ -156,11 +173,46 @@ export const TablesPage = () => {
     return () => {
       window.removeEventListener('focus', handleSync);
       window.removeEventListener('tablesUpdated', handleSync);
+      window.removeEventListener('tableOptionsUpdated', handleSync);
       window.removeEventListener('storage', handleSync);
       clearInterval(interval);
     };
   }, []);
 
+  // Dynamically compute all unique dining areas
+  const filterOptions = useMemo(() => {
+    const areaMap = new Map();
+
+    // Default base sections
+    areaMap.set('indoor', 'Indoor');
+    areaMap.set('outdoor', 'Outdoor');
+
+    // Sections from backend options API
+    diningAreas.forEach((area) => {
+      if (area && typeof area === 'string' && area.trim()) {
+        const trimmed = area.trim();
+        const lower = trimmed.toLowerCase();
+        if (!areaMap.has(lower)) {
+          const formatted = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+          areaMap.set(lower, formatted);
+        }
+      }
+    });
+
+    // Sections from currently loaded tables
+    tables.forEach((t) => {
+      if (t.section && typeof t.section === 'string' && t.section.trim()) {
+        const trimmed = t.section.trim();
+        const lower = trimmed.toLowerCase();
+        if (!areaMap.has(lower)) {
+          const formatted = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+          areaMap.set(lower, formatted);
+        }
+      }
+    });
+
+    return ['All', ...Array.from(areaMap.values())];
+  }, [diningAreas, tables]);
 
   const handleCreateTable = async (e) => {
     e.preventDefault();
@@ -206,9 +258,17 @@ export const TablesPage = () => {
       table.seating_type ||
       table.floor_section ||
       ''
-    ).toLowerCase();
-    if (sec === 'outdoor' || sec === 'terrace' || sec === 'out door' || sec.includes('outdoor')) {
-      return 'Outdoor Seating';
+    ).trim();
+    if (sec) {
+      const formatted = sec.charAt(0).toUpperCase() + sec.slice(1);
+      if (
+        formatted.toLowerCase().endsWith('seating') ||
+        formatted.toLowerCase().endsWith('area') ||
+        formatted.toLowerCase().endsWith('room')
+      ) {
+        return formatted;
+      }
+      return `${formatted} Seating`;
     }
     return 'Indoor Seating';
   };
@@ -426,14 +486,15 @@ export const TablesPage = () => {
   // Filter backend tables dynamically by section
   const filteredTables = activeStaffTables.filter((t) => {
     if (activeFilter === 'All') return true;
-    const sec = (t.section || '').toLowerCase();
-    if (activeFilter === 'Indoor') {
-      return sec === 'indoor' || sec === 'main' || sec === '' || !t.section;
+    const sec = (t.section || 'indoor').trim().toLowerCase();
+    const filterLower = activeFilter.trim().toLowerCase();
+    if (filterLower === 'indoor') {
+      return sec.includes('indoor') || sec === 'main' || !t.section;
     }
-    if (activeFilter === 'Out door') {
-      return sec === 'outdoor' || sec === 'terrace' || sec === 'out door';
+    if (filterLower === 'outdoor' || filterLower === 'out door') {
+      return sec.includes('outdoor') || sec.includes('terrace') || sec === 'out door';
     }
-    return true;
+    return sec === filterLower;
   });
 
   // Natural sorting by table number: T 1, T 2, T 3, T 4...
@@ -534,24 +595,15 @@ export const TablesPage = () => {
 
       {/* Filter Pills */}
       <div className="mobile-filter-pills">
-        <button
-          className={`filter-pill ${activeFilter === 'All' ? 'active' : ''}`}
-          onClick={() => setActiveFilter('All')}
-        >
-          All
-        </button>
-        <button
-          className={`filter-pill ${activeFilter === 'Indoor' ? 'active' : ''}`}
-          onClick={() => setActiveFilter('Indoor')}
-        >
-          Indoor
-        </button>
-        <button
-          className={`filter-pill ${activeFilter === 'Out door' ? 'active' : ''}`}
-          onClick={() => setActiveFilter('Out door')}
-        >
-          Out door
-        </button>
+        {filterOptions.map((filterName) => (
+          <button
+            key={filterName}
+            className={`filter-pill ${activeFilter.toLowerCase() === filterName.toLowerCase() ? 'active' : ''}`}
+            onClick={() => setActiveFilter(filterName)}
+          >
+            {filterName}
+          </button>
+        ))}
       </div>
 
       {/* Table Cards Grid */}
@@ -564,28 +616,31 @@ export const TablesPage = () => {
           No tables match the selected filter.
         </div>
       ) : (
-        <div className="unified-table-grid">
-          {sortedTables.map((table, index) => {
+        <div className="tables-grid">
+          {sortedTables.map((table) => {
             const statusConfig = getStatusConfig(table.status);
+            const isReserved = (table.status || '').toLowerCase() === 'reserved';
+            const isNoService = ['no_service', 'inactive'].includes((table.status || '').toLowerCase());
             
-            // Section name from backend database
             const rawSec = (table.section || '').toLowerCase();
             let sectionText = table.section
               ? table.section.charAt(0).toUpperCase() + table.section.slice(1)
               : 'Indoor';
 
-            const isReserved = (table.status || '').toLowerCase() === 'reserved';
-
             return (
               <div
                 key={table.id}
-                className={`table-card-mobile ${statusConfig.statusClass}`}
-                onClick={() => handleSelectTableForOrder(table)}
-                style={{ backgroundColor: statusConfig.cardBg }}
+                className={`table-card ${statusConfig.statusClass}`}
+                onClick={() => handleTableCardClick(table)}
+                style={{
+                  backgroundColor: statusConfig.cardBg,
+                  position: 'relative',
+                  border: isReserved ? '1.5px solid #357EC3' : undefined
+                }}
               >
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div className="table-card-num" style={{ color: statusConfig.numColor }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                    <div className="table-card-number" style={{ color: statusConfig.numColor }}>
                       {formatTableNumber(table.number)}
                     </div>
                     {user?.role === 'admin' && (
@@ -691,10 +746,9 @@ export const TablesPage = () => {
                   value={floorSection}
                   onChange={(e) => setFloorSection(e.target.value)}
                 >
-                  <option value="indoor">Indoor</option>
-                  <option value="outdoor">Outdoor</option>
-                  <option value="terrace">Terrace</option>
-                  <option value="private">Private Room</option>
+                  {filterOptions.filter((f) => f !== 'All').map((opt) => (
+                    <option key={opt} value={opt.toLowerCase()}>{opt}</option>
+                  ))}
                 </select>
               </div>
 

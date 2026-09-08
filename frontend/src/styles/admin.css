@@ -608,10 +608,12 @@
 .admin-filter-pill-container {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.25rem;
   background: #EAE8E5;
   padding: 3px 4px;
   border-radius: 999px;
+  max-width: 100%;
 }
 
 .admin-filter-pill-btn {
@@ -623,6 +625,7 @@
   padding: 5px 13px;
   border-radius: 999px;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.15s ease;
 }
 

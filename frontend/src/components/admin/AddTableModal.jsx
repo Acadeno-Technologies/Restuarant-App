@@ -162,6 +162,7 @@ export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
       setCustomAreaInput('');
       setShowCustomDiningAreaInput(false);
       setOpenDropdown(null);
+      window.dispatchEvent(new Event('tableOptionsUpdated'));
     } catch (err) {
       console.error('Failed to save custom dining area:', err);
       if (!areaOptions.includes(formattedArea)) {
@@ -171,6 +172,7 @@ export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
       setCustomAreaInput('');
       setShowCustomDiningAreaInput(false);
       setOpenDropdown(null);
+      window.dispatchEvent(new Event('tableOptionsUpdated'));
     } finally {
       setAddingArea(false);
     }
@@ -216,6 +218,7 @@ export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
       setShowCustomSeatInput(false);
       setShowCustomDiningAreaInput(false);
       setOpenDropdown(null);
+      window.dispatchEvent(new Event('tablesUpdated'));
       onClose();
 
       if (onTableCreated) {

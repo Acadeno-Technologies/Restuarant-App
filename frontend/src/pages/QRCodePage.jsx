@@ -1,13 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { tablesApi } from '../api/tablesApi';
 import { Copy, Check, ArrowLeft } from 'lucide-react';
 
 export const QRCodePage = () => {
   const [tables, setTables] = useState([]);
+  const [diningAreas, setDiningAreas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('All');
   const [selectedTable, setSelectedTable] = useState(null);
   const [copied, setCopied] = useState(false);
+
+  const loadDiningAreas = async () => {
+    try {
+      const data = await tablesApi.getTableOptions();
+      if (data && Array.isArray(data.sections)) {
+        setDiningAreas(data.sections);
+      }
+    } catch (err) {
+      console.error('Failed to load dining areas:', err);
+    }
+  };
 
   const loadTables = async () => {
     try {
@@ -25,11 +37,17 @@ export const QRCodePage = () => {
 
   useEffect(() => {
     loadTables();
+    loadDiningAreas();
 
     const handleFocus = () => {
-      if (!document.hidden) loadTables();
+      if (!document.hidden) {
+        loadTables();
+        loadDiningAreas();
+      }
     };
     window.addEventListener('focus', handleFocus);
+    window.addEventListener('tablesUpdated', handleFocus);
+    window.addEventListener('tableOptionsUpdated', handleFocus);
 
     const interval = setInterval(() => {
       if (!document.hidden) loadTables();
@@ -37,9 +55,47 @@ export const QRCodePage = () => {
 
     return () => {
       window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('tablesUpdated', handleFocus);
+      window.removeEventListener('tableOptionsUpdated', handleFocus);
       clearInterval(interval);
     };
   }, []);
+
+  // Dynamically compute all unique dining areas
+  const filterOptions = useMemo(() => {
+    const areaMap = new Map();
+
+    // Default base sections
+    areaMap.set('indoor', 'Indoor');
+    areaMap.set('outdoor', 'Outdoor');
+
+    // Sections from backend options API
+    diningAreas.forEach((area) => {
+      if (area && typeof area === 'string' && area.trim()) {
+        const trimmed = area.trim();
+        const lower = trimmed.toLowerCase();
+        if (!areaMap.has(lower)) {
+          const formatted = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+          areaMap.set(lower, formatted);
+        }
+      }
+    });
+
+    // Sections from currently loaded tables
+    tables.forEach((t) => {
+      const sec = t.section || t.seating_type;
+      if (sec && typeof sec === 'string' && sec.trim()) {
+        const trimmed = sec.trim();
+        const lower = trimmed.toLowerCase();
+        if (!areaMap.has(lower)) {
+          const formatted = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+          areaMap.set(lower, formatted);
+        }
+      }
+    });
+
+    return ['All', ...Array.from(areaMap.values())];
+  }, [diningAreas, tables]);
 
   // Dynamic filter logic (exclude deactivated / no_service tables)
   const activeTables = tables.filter((t) => {
@@ -49,14 +105,15 @@ export const QRCodePage = () => {
 
   const filteredTables = activeTables.filter((t) => {
     if (activeFilter === 'All' || activeFilter === 'All tables') return true;
-    const sec = (t.section || t.seating_type || '').toLowerCase();
-    if (activeFilter === 'Indoor') {
-      return sec === 'indoor' || sec === 'main' || sec === '' || !t.section;
+    const sec = (t.section || t.seating_type || 'indoor').trim().toLowerCase();
+    const filterLower = activeFilter.trim().toLowerCase();
+    if (filterLower === 'indoor') {
+      return sec.includes('indoor') || sec === 'main' || !t.section;
     }
-    if (activeFilter === 'Out door') {
-      return sec === 'outdoor' || sec === 'terrace' || sec === 'out door';
+    if (filterLower === 'outdoor' || filterLower === 'out door') {
+      return sec.includes('outdoor') || sec.includes('terrace') || sec === 'out door';
     }
-    return true;
+    return sec === filterLower;
   });
 
   // Natural sorting by table number
@@ -215,10 +272,10 @@ export const QRCodePage = () => {
 
           {/* Filter Buttons */}
           <div className="qr-filter-container">
-            {['All', 'Indoor', 'Out door'].map((filter) => (
+            {filterOptions.map((filter) => (
               <button
                 key={filter}
-                className={`qr-filter ${activeFilter === filter ? 'active' : ''}`}
+                className={`qr-filter ${activeFilter.toLowerCase() === filter.toLowerCase() ? 'active' : ''}`}
                 onClick={() => setActiveFilter(filter)}
               >
                 {filter}
