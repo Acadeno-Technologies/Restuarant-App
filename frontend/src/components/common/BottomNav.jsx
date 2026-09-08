@@ -7,8 +7,7 @@ export const BottomNav = () => {
   const { user } = useAuth();
   const currentPath = location.pathname;
 
-  const isStaff = user?.role === 'staff';
-  const prefix = isStaff ? '/staff' : '';
+  const prefix = currentPath.startsWith('/staff') || user?.role === 'staff' ? '/staff' : '';
 
   const isTablesActive = currentPath.includes('tables') || currentPath === '/' || currentPath === '/staff' || currentPath === '/staff/';
   const isOrdersActive = currentPath.includes('pos') || currentPath.includes('orders');

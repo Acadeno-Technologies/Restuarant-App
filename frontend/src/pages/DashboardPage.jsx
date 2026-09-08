@@ -392,16 +392,6 @@ export const DashboardPage = () => {
                 </button>
               ))}
             </div>
-
-            {/* + Add New Table Button */}
-            <button
-              type="button"
-              className="admin-add-table-btn"
-              onClick={() => setShowAddModal(true)}
-            >
-              <Plus size={15} strokeWidth={2.5} />
-              <span>Add New Table</span>
-            </button>
           </div>
         </div>
 

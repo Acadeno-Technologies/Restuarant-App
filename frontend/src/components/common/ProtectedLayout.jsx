@@ -20,16 +20,11 @@ export const ProtectedLayout = () => {
     return <Navigate to="/kitchen-screen" replace />;
   }
 
-  const isStaff = user?.role === 'staff';
-
   return (
-    <div className="app-container" style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', flex: 1, width: '100%' }}>
-        {!isStaff && <Sidebar />}
-        <main className={`main-content ${isStaff ? 'staff-main-content' : ''}`}>
-          <Outlet />
-        </main>
-      </div>
+    <div className="app-container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#F8E8DA' }}>
+      <main className="staff-main-content" style={{ flex: 1, width: '100%', padding: 0, margin: 0, background: '#F8E8DA' }}>
+        <Outlet />
+      </main>
       <BottomNav />
       <ProfileSheet />
     </div>

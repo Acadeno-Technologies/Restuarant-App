@@ -524,19 +524,24 @@ export const TablesPage = () => {
     );
   };
 
-  // Seated person icon matching attached reference image
+  // Seated person icon matching people-icon.svg
   const SeatedPersonIcon = () => (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      style={{ flexShrink: 0 }}
-    >
-      <circle cx="10" cy="3" r="2.2" />
-      <path d="M 8.5 7 C 8.2 7 8 7.2 8.1 7.5 L 9.2 12.5 C 9.3 13 9.7 13.5 10.3 13.5 L 16.5 13.5 C 17.1 13.5 17.6 13.9 17.8 14.5 L 20 20 C 20.2 20.5 19.8 21 19.2 21 C 18.8 21 18.5 20.7 18.3 20.3 L 16.3 15.3 L 11.2 15.3 C 9.8 15.3 8.6 14.3 8.3 12.9 L 7.3 7.8 C 7.2 7.3 7.6 7 8.5 7 Z" />
-      <path d="M 5 5 L 6.2 14.5 C 6.5 16.5 8 17.5 10 17.5 L 18 17.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <img
+      src="/people-icon.svg"
+      alt="Seats"
+      className="table-seats-icon"
+      style={{
+        width: '15px',
+        height: '17px',
+        objectFit: 'contain',
+        flexShrink: 0,
+        display: 'inline-block',
+      }}
+      onError={(e) => {
+        e.target.onerror = null;
+        e.target.src = '/people-icon.png';
+      }}
+    />
   );
 
   return (
@@ -562,15 +567,6 @@ export const TablesPage = () => {
                 {user?.username ? user.username[0].toUpperCase() : 'A'}
               </div>
             )}
-          </div>
-
-          <div className="desktop-only-actions" style={{ display: 'flex', gap: '0.75rem' }}>
-            <button className="btn btn-secondary" style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', color: '#171717', borderRadius: '14px' }} onClick={loadTables}>
-              <RefreshCw size={16} /> Refresh
-            </button>
-            <button className="btn btn-primary" style={{ background: '#350505', borderColor: '#350505', color: '#ffffff', borderRadius: '14px', fontWeight: 700 }} onClick={() => setShowAddModal(true)}>
-              <Plus size={16} /> Add Table
-            </button>
           </div>
         </div>
       </div>
