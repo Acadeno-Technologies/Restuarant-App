@@ -607,7 +607,7 @@ h6 {
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  margin-top: 0 !important;
+  margin-top: 20px !important;
   margin-bottom: 18px !important;
   padding: 0 !important;
 }
@@ -7663,4 +7663,4 @@ h6 {
 }
 
 
-
+
