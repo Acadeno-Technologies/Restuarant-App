@@ -10,65 +10,65 @@ const STATUS_STYLES = {
   available: {
     statusClass: 'available',
     label: 'Available',
-    numColor: '#2C8238',
-    badgeBg: '#C7CE9F',
-    badgeText: '#2C8238',
-    dotColor: '#2C8238',
-    cardBg: '#E7E0C5',
+    numColor: '#277832',
+    badgeBg: '#CCD2A6',
+    badgeText: '#277832',
+    dotColor: '#277832',
+    cardBg: '#E5E6D0',
   },
   occupied: {
     statusClass: 'occupied',
     label: 'Occupied',
-    numColor: '#B92722',
-    badgeBg: '#EEA79B',
-    badgeText: '#B92722',
-    dotColor: '#B92722',
-    cardBg: '#C711001A',
+    numColor: '#C92A20',
+    badgeBg: '#F4B6AB',
+    badgeText: '#BA2823',
+    dotColor: '#BA2823',
+    cardBg: '#F9DBD1',
   },
   reserved: {
     statusClass: 'reserved',
     label: 'Reserved',
-    numColor: '#075985',
-    badgeBg: '#85A8E1',
+    numColor: '#0B4F8C',
+    badgeBg: '#729ACC',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#357EC333',
+    cardBg: '#D7DFE6',
   },
   billing: {
     statusClass: 'billing',
     label: 'Billing',
-    numColor: '#B8860B',
-    badgeBg: '#C58C00',
+    numColor: '#C58A00',
+    badgeBg: '#C58A00',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#F9E8D0',
+    cardBg: '#F7E3CC',
   },
   cleaning: {
     statusClass: 'billing',
     label: 'Cleaning',
-    numColor: '#B8860B',
+    numColor: '#C58A00',
     badgeBg: '#C58C00',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#F9E8D0',
+    cardBg: '#F7E3CC',
   },
   no_service: {
     statusClass: 'no_service',
     label: 'No Service',
-    numColor: '#FFFFFF',
-    badgeBg: '#5A5A5A',
+    numColor: '#6B5E55',
+    badgeBg: '#6B5E55',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#787878',
+    cardBg: '#EBE8E4',
   },
   inactive: {
     statusClass: 'no_service',
     label: 'No Service',
-    numColor: '#FFFFFF',
-    badgeBg: '#5A5A5A',
+    numColor: '#6B5E55',
+    badgeBg: '#6B5E55',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#787878',
+    cardBg: '#EBE8E4',
   },
 };
 
@@ -616,7 +616,7 @@ export const TablesPage = () => {
           No tables match the selected filter.
         </div>
       ) : (
-        <div className="tables-grid">
+        <div className="unified-table-grid">
           {sortedTables.map((table) => {
             const statusConfig = getStatusConfig(table.status);
             const isReserved = (table.status || '').toLowerCase() === 'reserved';
@@ -630,8 +630,8 @@ export const TablesPage = () => {
             return (
               <div
                 key={table.id}
-                className={`table-card ${statusConfig.statusClass}`}
-                onClick={() => handleTableCardClick(table)}
+                className={`table-card-mobile ${statusConfig.statusClass}`}
+                onClick={() => handleSelectTableForOrder(table)}
                 style={{
                   backgroundColor: statusConfig.cardBg,
                   position: 'relative',
@@ -639,8 +639,8 @@ export const TablesPage = () => {
                 }}
               >
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
-                    <div className="table-card-number" style={{ color: statusConfig.numColor }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                    <div className="table-card-num" style={{ color: statusConfig.numColor }}>
                       {formatTableNumber(table.number)}
                     </div>
                     {user?.role === 'admin' && (
@@ -670,27 +670,20 @@ export const TablesPage = () => {
                   </div>
 
                   <div className="table-card-seats">
-                    <img
-                      src="/people-icon.png"
-                      alt="Seats"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = '/Vector.png';
-                      }}
-                    />
+                    <SeatedPersonIcon />
                     <span>{table.capacity || 4} seats</span>
                   </div>
 
                   {(isReserved && table.active_reservation) ? (
-                    <div style={{ fontSize: '12px', fontWeight: 500, color: '#171717', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <span style={{ fontSize: '7px', color: '#000000' }}>●</span>
+                    <div className="table-card-section-row">
+                      <span className="section-bullet">●</span>
                       <span>
                         {table.active_reservation.guest_name} · {formatArrivalTime(table.active_reservation.arrival_time)}
                       </span>
                     </div>
                   ) : sectionText ? (
-                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#111111', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <span style={{ fontSize: '8px' }}>●</span>
+                    <div className="table-card-section-row">
+                      <span className="section-bullet">●</span>
                       <span>{sectionText}</span>
                     </div>
                   ) : null}

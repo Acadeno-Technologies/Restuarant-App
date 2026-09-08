@@ -1,29 +1,34 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { ShoppingBag, Grid, Receipt, QrCode } from 'lucide-react';
-import { useOrder } from '../../context/OrderContext';
+import { useAuth } from '../../context/AuthContext';
 
 export const BottomNav = () => {
   const location = useLocation();
-  const { cartItems } = useOrder();
+  const { user } = useAuth();
   const currentPath = location.pathname;
 
-  const totalCartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const isStaff = user?.role === 'staff';
+  const prefix = isStaff ? '/staff' : '';
+
+  const isTablesActive = currentPath.includes('tables') || currentPath === '/' || currentPath === '/staff' || currentPath === '/staff/';
+  const isOrdersActive = currentPath.includes('pos') || currentPath.includes('orders');
+  const isBillingActive = currentPath.includes('billing');
+  const isQrActive = currentPath.includes('qr');
 
   return (
     <nav className="mobile-bottom-nav">
       <NavLink
-        to="/tables"
-        className={`bottom-nav-item ${currentPath.includes('tables') ? 'active' : ''}`}
+        to={`${prefix}/tables`}
+        className={`bottom-nav-item ${isTablesActive ? 'active' : ''}`}
       >
         <div className="bottom-nav-icon-wrapper">
           <img
-            src="/tables-icon.png"
+            src="/Dining table.png"
             alt="Tables"
             className="bottom-nav-icon-img"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = '/Dining table.png';
+              e.target.src = '/tables-icon.png';
             }}
           />
         </div>
@@ -31,54 +36,42 @@ export const BottomNav = () => {
       </NavLink>
 
       <NavLink
-        to="/pos"
-        className={`bottom-nav-item ${currentPath.includes('pos') ? 'active' : ''}`}
+        to={`${prefix}/pos`}
+        className={`bottom-nav-item ${isOrdersActive ? 'active' : ''}`}
       >
         <div className="bottom-nav-icon-wrapper">
           <img
             src="/order.png"
             alt="Orders"
             className="bottom-nav-icon-img"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = '/tables-icon.png';
-            }}
           />
         </div>
         <span className="bottom-nav-label">Orders</span>
       </NavLink>
 
       <NavLink
-        to="/billing"
-        className={`bottom-nav-item ${currentPath.includes('billing') ? 'active' : ''}`}
+        to={`${prefix}/billing`}
+        className={`bottom-nav-item ${isBillingActive ? 'active' : ''}`}
       >
         <div className="bottom-nav-icon-wrapper">
           <img
             src="/Bill.png"
             alt="Billing"
             className="bottom-nav-icon-img"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = '/tables-icon.png';
-            }}
           />
         </div>
         <span className="bottom-nav-label">Billing</span>
       </NavLink>
 
       <NavLink
-        to="/qr"
-        className={`bottom-nav-item ${currentPath.includes('qr') ? 'active' : ''}`}
+        to={`${prefix}/qr`}
+        className={`bottom-nav-item ${isQrActive ? 'active' : ''}`}
       >
         <div className="bottom-nav-icon-wrapper">
           <img
             src="/qr.png"
             alt="QR Code"
             className="bottom-nav-icon-img"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = '/tables-icon.png';
-            }}
           />
         </div>
         <span className="bottom-nav-label">QR Code</span>
