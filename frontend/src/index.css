@@ -670,7 +670,6 @@ h6 {
   font-weight: 900 !important;
   color: #B3261E !important;
   line-height: 1.1 !important;
-
   margin-bottom: 2px !important;
   font-family: 'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
@@ -678,7 +677,7 @@ h6 {
 .stat-num-total {
   font-size: 32px !important;
   font-weight: 900 !important;
-  color: #2E2521 !important;
+  color: #3E2723 !important;
   line-height: 1.1 !important;
   margin-bottom: 2px !important;
   font-family: 'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -746,7 +745,7 @@ h6 {
   flex-direction: column !important;
   justify-content: space-between !important;
   box-shadow: 0 4px 16px rgba(180, 140, 115, 0.12) !important;
-  border: none !important;
+  border: 1.5px solid #FFFFFF !important;
   cursor: pointer !important;
   transition: transform 0.15s ease, box-shadow 0.15s ease !important;
   box-sizing: border-box !important;

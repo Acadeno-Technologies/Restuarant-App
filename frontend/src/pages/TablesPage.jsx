@@ -631,7 +631,7 @@ export const TablesPage = () => {
                 style={{
                   backgroundColor: statusConfig.cardBg,
                   position: 'relative',
-                  border: isReserved ? '1.5px solid #357EC3' : undefined
+                  border: '1.5px solid #FFFFFF',
                 }}
               >
                 <div>
