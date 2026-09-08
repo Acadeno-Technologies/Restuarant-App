@@ -5,7 +5,7 @@ import { useOrder } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
 import { Plus, RefreshCw, QrCode, Trash2, X } from 'lucide-react';
 
-// Reusable status styling configuration matching reference image specs
+// Reusable status styling configuration matching exact reference image & user specs
 const STATUS_STYLES = {
   available: {
     statusClass: 'available',
@@ -19,17 +19,17 @@ const STATUS_STYLES = {
   occupied: {
     statusClass: 'occupied',
     label: 'Occupied',
-    numColor: '#C92A20',
+    numColor: '#B3261E',
     badgeBg: '#F4B6AB',
-    badgeText: '#BA2823',
-    dotColor: '#BA2823',
-    cardBg: '#F9DBD1',
+    badgeText: '#B3261E',
+    dotColor: '#B3261E',
+    cardBg: '#B3261E1A',
   },
   reserved: {
     statusClass: 'reserved',
     label: 'Reserved',
-    numColor: '#0B4F8C',
-    badgeBg: '#729ACC',
+    numColor: '#004372',
+    badgeBg: '#7B9CCD',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
     cardBg: '#D7DFE6',
@@ -37,8 +37,8 @@ const STATUS_STYLES = {
   billing: {
     statusClass: 'billing',
     label: 'Billing',
-    numColor: '#C58A00',
-    badgeBg: '#C58A00',
+    numColor: '#BE8A00',
+    badgeBg: '#BE8A00',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
     cardBg: '#F7E3CC',
@@ -46,8 +46,8 @@ const STATUS_STYLES = {
   cleaning: {
     statusClass: 'billing',
     label: 'Cleaning',
-    numColor: '#C58A00',
-    badgeBg: '#C58C00',
+    numColor: '#BE8A00',
+    badgeBg: '#BE8A00',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
     cardBg: '#F7E3CC',

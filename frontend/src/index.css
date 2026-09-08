@@ -668,8 +668,9 @@ h6 {
 .stat-num-occupied {
   font-size: 32px !important;
   font-weight: 900 !important;
-  color: #C92A20 !important;
+  color: #B3261E !important;
   line-height: 1.1 !important;
+
   margin-bottom: 2px !important;
   font-family: 'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
